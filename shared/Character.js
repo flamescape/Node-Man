@@ -6,7 +6,7 @@ var Character = function(maze) {
     this.y = 0;
     /* up:1, right:2, down:4, left:8 */
     this.direction = 8;
-    this.speed = 0.26;
+    this.speed = 0.1285;
 };
 Character.prototype.__proto__ = EventEmitter2.prototype;
 
@@ -14,14 +14,14 @@ Character.prototype.canMove = function(x, y){
     return !this.maze.collisions[(y * this.maze.width) + x];
 };
 
-Character.prototype.tick = function() {
+Character.prototype.tick = function(delta) {
     var mx = 0, my = 0;
     
     switch (this.direction) {
-        case 1: my -= this.speed; break; // move up
-        case 2: mx += this.speed; break; // move right
-        case 4: my += this.speed; break; // move down
-        case 8: mx -= this.speed; break; // move left
+        case 1: my -= this.speed * delta; break; // move up
+        case 2: mx += this.speed * delta; break; // move right
+        case 4: my += this.speed * delta; break; // move down
+        case 8: mx -= this.speed * delta; break; // move left
     }
     
     // check for wall in front of us
