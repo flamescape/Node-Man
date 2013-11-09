@@ -20,6 +20,7 @@ Game.prototype.loadLevel = function(level) {
         });
         stage.add(this.maze.getWallLayer());
         stage.add(this.maze.getPillsLayer());
+        stage.add(this.maze.getSuperPillsLayer());
         
         // loaded maze into m
         loadImages(function(tiles){
@@ -44,6 +45,7 @@ Game.prototype.stop = function() {
 Game.prototype.draw = function() {
     this.maze.getWallLayer().batchDraw();
     this.maze.getPillsLayer().batchDraw();
+    this.maze.getSuperPillsLayer().batchDraw();
     
 };
 

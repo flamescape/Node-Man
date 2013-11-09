@@ -129,11 +129,12 @@ Maze.prototype.getWallLayer = function() {
 };
 
 Maze.prototype.createPillsLayer = function(tileSize, tiles) {
-    var layer = this.getPillsLayer();
+    var pillsLayer = this.getPillsLayer();
+    var superPillsLayer = this.getSuperPillsLayer();
     
     _.each(this.pills, function(pill, idx) {
         if (pill === 1) {
-            layer.add(new Kinetic.RegularPolygon({
+            pillsLayer.add(new Kinetic.RegularPolygon({
                 x: (idx % this.width) * tSize + tSize * 0.5,
                 y: Math.floor(idx / this.width) * tSize + tSize * 0.5,
                 radius: 4,
@@ -142,7 +143,7 @@ Maze.prototype.createPillsLayer = function(tileSize, tiles) {
                 fill: "#FFF"
             }));
         } else if (pill === 2) {
-            layer.add(new Kinetic.RegularPolygon({
+            superPillsLayer.add(new Kinetic.RegularPolygon({
                 x: (idx % this.width) * tSize + tSize * 0.5,
                 y: Math.floor(idx / this.width) * tSize + tSize * 0.5,
                 radius: 12,
@@ -155,4 +156,8 @@ Maze.prototype.createPillsLayer = function(tileSize, tiles) {
 
 Maze.prototype.getPillsLayer = function() {
     return this.pillsLayer || (this.pillsLayer = new Kinetic.Layer());
+};
+
+Maze.prototype.getSuperPillsLayer = function() {
+    return this.SuperPillsLayer || (this.SuperPillsLayer = new Kinetic.Layer());
 };
