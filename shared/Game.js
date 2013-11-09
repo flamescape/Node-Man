@@ -55,14 +55,7 @@ Game.prototype.start = function() {
     this.loopInterval = setInterval(function() {
         this.tick(); // movement & collisions
         if (!SERVER) {
-            this.maze.getSuperPillsLayer().getChildren().each(function(shape) {
-                var rot = shape.getAttr('rotationDeg') + 4;
-                shape.setAttr('rotationDeg', rot);
-
-                var pulseSpeed = 150;
-                var c = Math.sin(Date.now() / pulseSpeed) + 1;
-                shape.setAttr('radius', 12 + 2 * c);
-            });
+            this.animateSuperPills(4, 155);
             this.draw(); // redraw pills and characters
         }
     }.bind(this), 1000/60);
@@ -89,4 +82,14 @@ Game.prototype.tick = function() {
     this.characters.forEach(function(c){
         c.tick();
     }.bind(this));
+};
+
+Game.prototype.animateSuperPills = function(rotSpeed, pulseSpeed) {
+    this.maze.getSuperPillsLayer().getChildren().each(function(shape) {
+        var rot = shape.getAttr('rotationDeg') + rotSpeed;
+        shape.setAttr('rotationDeg', rot);
+
+        var c = Math.sin(Date.now() / pulseSpeed) + 1;
+        shape.setAttr('radius', 12 + 2 * c);
+    });
 };
