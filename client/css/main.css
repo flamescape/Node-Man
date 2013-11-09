@@ -1,9 +1,12 @@
 body {
-    background: #0e0e0e;
+    background: #0a0a0a;
     margin: 0;
 }
 #maze { 
   width: 672px;
   height: 744px;
   background: #0e0e0e;
+  -moz-box-shadow:    3px 3px 25px 6px #0e0e0e;
+  -webkit-box-shadow: 3px 3px 25px 6px #0e0e0e;
+  box-shadow:         3px 3px 25px 6px #0e0e0e;
 }
