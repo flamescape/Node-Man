@@ -139,11 +139,7 @@ Maze.prototype.createPillsLayer = function(tileSize, tiles) {
                 radius: 4,
                 sides: 6,
                 rotationDeg: Math.random() * (360 - 1) + 1,
-                fill: "#FFF",
-                shadowColor: "#666",
-                shadowBlur: 0,
-                shadowOffsetX: 2,
-                shadowOffsetY: 2 
+                fill: "#FFF"
             }));
         } else if (pill === 2) {
             superPillsLayer.add(new Kinetic.RegularPolygon({
