@@ -8,7 +8,8 @@ var loadImages = function(callback) {
     var sources = {
         wall: 'img/tiles/wall-tile.png'
     };
-    [208,214,248,255,107,11,31,104,22,111,127,63,223,159,215,246,235,252,249,251,254].forEach(function(i){
+    //159, 111, 215, 249 are dupes
+    [104,107,11,127,208,214,22,223,235,246,248,251,252,254,255,31,63].forEach(function(i){
         sources[i] = 'img/tiles/'+i+'.png';
     });
 
