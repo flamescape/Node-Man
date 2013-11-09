@@ -65,7 +65,7 @@ var drawMaze = function(tiles) {
             y: Math.floor(num / 28) * 24,
             text: tile.toString(),
             fontSize: 10,
-            fill: 'green'
+            fill: 'blue'
         }));
     }); 
 

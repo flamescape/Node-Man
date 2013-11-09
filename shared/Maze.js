@@ -50,9 +50,9 @@ Maze.prototype.parse = function(data) {
     });
     
     var tileAt = function(idx) {
-        // if tile is outside the map, consider it empty
+        // if tile is outside the map, consider it solid
         if (idx < 0 || idx >= this.collisions.length)
-            return 0;
+            return 1;
         
         return this.collisions[idx];
     }.bind(this);
@@ -70,16 +70,16 @@ Maze.prototype.parse = function(data) {
         
         return (
             // above
-              ((tileAt(idxA-1) && !isLeftmost) ? 1 : 0)
+              ((tileAt(idxA-1) || isLeftmost) ? 1 : 0)
             | (tileAt(idxA) ? 2 : 0)
-            | ((tileAt(idxA+1) && !isRightmost) ? 4 : 0)
+            | ((tileAt(idxA+1) || isRightmost) ? 4 : 0)
             // sides
-            | ((tileAt(idx-1) && !isLeftmost) ? 8 : 0)
-            | ((tileAt(idx+1) && !isRightmost) ? 16 : 0)
+            | ((tileAt(idx-1) || isLeftmost) ? 8 : 0)
+            | ((tileAt(idx+1) || isRightmost) ? 16 : 0)
             // below
-            | ((tileAt(idxB-1) && !isLeftmost) ? 32 : 0)
+            | ((tileAt(idxB-1) || isLeftmost) ? 32 : 0)
             | (tileAt(idxB) ? 64 : 0)
-            | ((tileAt(idxB+1) && !isRightmost) ? 128 : 0)
+            | ((tileAt(idxB+1) || isRightmost) ? 128 : 0)
         );
     }.bind(this));
 };
