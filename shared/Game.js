@@ -59,8 +59,8 @@ Game.prototype.start = function() {
                 var rot = shape.getAttr('rotationDeg') + 4;
                 shape.setAttr('rotationDeg', rot);
 
-                var pulseSpeed = 600;
-                var c = Math.sin(Date.now() / pulseSpeed) + 1.5;
+                var pulseSpeed = 150;
+                var c = Math.sin(Date.now() / pulseSpeed) + 1;
                 shape.setAttr('radius', 12 + 2 * c);
             });
             this.draw(); // redraw pills and characters
