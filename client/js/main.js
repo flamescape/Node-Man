@@ -57,6 +57,8 @@ var drawMaze = function(tiles) {
             height: 24,
             fillPatternImage: tiles[tile] ? tiles[tile] : tiles.wall
         }));
+        
+        if (tiles[tile]) return;
         // for debugging
         mazeLayer.add(new Kinetic.Text({
             x: (num % 28) * 24,
