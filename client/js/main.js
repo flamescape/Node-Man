@@ -1,3 +1,5 @@
+var tSize = 24;
+
 var m = new Maze();
 m.load(1, function(err){
     if (err) throw err;
@@ -51,18 +53,18 @@ var drawMaze = function(tiles) {
             return;
         
         mazeLayer.add(new Kinetic.Rect({
-            x: (num % 28) * 24,
-            y: Math.floor(num / 28) * 24,
-            width: 24,
-            height: 24,
+            x: (num % 28) * tSize,
+            y: Math.floor(num / 28) * tSize,
+            width: tSize,
+            height: tSize,
             fillPatternImage: tiles[tile] ? tiles[tile] : tiles.wall
         }));
         
         //if (tiles[tile]) return;
         // for debugging
         mazeLayer.add(new Kinetic.Text({
-            x: (num % 28) * 24,
-            y: Math.floor(num / 28) * 24,
+            x: (num % 28) * tSize,
+            y: Math.floor(num / 28) * tSize,
             text: tile.toString(),
             fontSize: 10,
             fill: 'blue'
@@ -72,8 +74,8 @@ var drawMaze = function(tiles) {
     _.each(m.pills, function(pill, num) {
         if (pill === 1) {
             mazeLayer.add(new Kinetic.RegularPolygon({
-                x: (num % 28) * 24 + 10 + 2,
-                y: Math.floor(num / 28) * 24 + 10 + 2,
+                x: (num % 28) * (tSize * 1.5),
+                y: Math.floor(num / 28) * (tSize * 1.5),
                 radius: 4,
                 sides: 6,
                 fill: "#FFF"
