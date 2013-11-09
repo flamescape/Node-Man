@@ -2,7 +2,8 @@ var tSize = 24;
 
 var g = new Game();
 g.loadLevel(1);
-g.start();
+g.addCharacter(new Character());
+g.once('mazeLoaded', g.start.bind(g));
 
 var loadImages = function(callback) {
     var tiles = {};

@@ -4,8 +4,8 @@ var Character = function() {
     this.x = 0;
     this.y = 0;
     /* up:0, right:1, down:2, left:3 */
-    this.direction = 0;
-    this.speed = 1;
+    this.direction = 1;
+    this.speed = 10;
 };
 Character.prototype.__proto__ = EventEmitter2.prototype;
  
@@ -13,10 +13,10 @@ Character.prototype.tick = function() {
     var mx = 0, my = 0;
     
     switch (this.direction) {
-        case 0: my -= 1; break;
-        case 1: mx += 1; break;
-        case 2: my += 1; break;
-        case 3: mx -= 1; break;
+        case 0: my -= this.speed; break;
+        case 1: mx += this.speed; break;
+        case 2: my += this.speed; break;
+        case 3: mx -= this.speed; break;
     }
     
     // check for wall in front of us
@@ -26,6 +26,13 @@ Character.prototype.tick = function() {
     
     this.x += mx;
     this.y += my;
+};
+
+Character.prototype.draw = function(tileSize) {
+    this.getKineticShape().setAttrs({
+        x: (this.x / 100) * tileSize,
+        y: (this.y / 100) * tileSize
+    });
 };
 
 Character.prototype.getKineticShape = function() {
@@ -42,13 +49,13 @@ Character.prototype.changeDirection = function(newDir) {
     switch (newDir) {
         case 0:
         case 2:
-            if (this.x % 10 === 0) {
+            if (this.x % 100 === 0) {
                 this.direction = newDir;
             }
             break;
         case 1:
         case 3:
-            if (this.y % 10 === 0) {
+            if (this.y % 100 === 0) {
                 this.direction = newDir;
             }
             break;
