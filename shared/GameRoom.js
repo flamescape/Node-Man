@@ -1,1 +1,0 @@
-console.log(SERVER ? 'I AM THE SERVER' : 'I AM THE CLIENT');

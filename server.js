@@ -27,6 +27,7 @@ server.listen(process.env.NODE_ENV === 'production' ? 80 : 8000, function(err) {
 app.use(express.static('client'));
 app.use('/js/shared', express.static('shared'));
 app.use('/js/lib/shared', express.static('node_modules'));
+app.use('/levels', express.static('levels'));
 
 io.sockets.on('connection', function(sock) {
     console.log('New client connected.'.cyan);
