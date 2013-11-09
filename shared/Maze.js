@@ -134,8 +134,8 @@ Maze.prototype.createPillsLayer = function(tileSize, tiles) {
     _.each(this.pills, function(pill, idx) {
         if (pill === 1) {
             layer.add(new Kinetic.RegularPolygon({
-                x: (idx % this.width) * tSize + tSize * 0.5,
-                y: Math.floor(idx / this.width) * tSize + tSize * 0.5,
+                x: (idx % this.width) * tileSize + tileSize * 0.5,
+                y: Math.floor(idx / this.width) * tileSize + tileSize * 0.5,
                 radius: 4,
                 sides: 6,
                 rotationDeg: Math.random() * (360 - 1) + 1,
@@ -143,8 +143,8 @@ Maze.prototype.createPillsLayer = function(tileSize, tiles) {
             }));
         } else if (pill === 2) {
             layer.add(new Kinetic.RegularPolygon({
-                x: (idx % this.width) * tSize + tSize * 0.5,
-                y: Math.floor(idx / this.width) * tSize + tSize * 0.5,
+                x: (idx % this.width) * tileSize + tileSize * 0.5,
+                y: Math.floor(idx / this.width) * tileSize + tileSize * 0.5,
                 radius: 12,
                 sides: 6,
                 fill: "#FFF"

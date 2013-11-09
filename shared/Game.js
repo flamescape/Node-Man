@@ -23,6 +23,7 @@ Game.prototype.__proto__ = EventEmitter2.prototype;
 Game.prototype.addCharacter = function(character) {
     this.characters.push(character);
     this.characterLayer.add(character.getKineticShape());
+    return character;
 };
 
 Game.prototype.loadLevel = function(level) {
@@ -43,7 +44,9 @@ Game.prototype.start = function() {
     // this is the game loop:
     this.loopInterval = setInterval(function() {
         this.tick(); // movement & collisions
-        this.draw(); // redraw pills and characters
+        if (!SERVER) {
+            this.draw(); // redraw pills and characters
+        }
     }.bind(this), 1000/60);
 };
 

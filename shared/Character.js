@@ -5,7 +5,7 @@ var Character = function() {
     this.y = 0;
     /* up:0, right:1, down:2, left:3 */
     this.direction = 1;
-    this.speed = 10;
+    this.speed = 15;
 };
 Character.prototype.__proto__ = EventEmitter2.prototype;
  
