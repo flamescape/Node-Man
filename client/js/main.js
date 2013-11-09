@@ -1,11 +1,12 @@
 var g = new Game();
 g.loadLevel(1);
-g.once('mazeLoaded', g.start.bind(g));
-
-var c = g.addCharacter(new Character());
-c.x = 13.5*100;
-c.y = 23*100;
-c.assignController(new LocalController(c));
+g.once('mazeLoaded', function(){
+    var c = g.addCharacter(new Character(g.maze));
+    c.x = 13.5;
+    c.y = 23;
+    c.assignController(new LocalController(c));
+    g.start();
+});
 
 var loadImages = function(callback) {
     var tiles = {};

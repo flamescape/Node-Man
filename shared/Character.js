@@ -1,33 +1,63 @@
 var EventEmitter2 = EventEmitter2 || require('eventemitter2');
 
-var Character = function() {
+var Character = function(maze) {
+    this.maze = maze;
     this.x = 0;
     this.y = 0;
-    /* up:0, right:1, down:2, left:3 */
-    this.direction = 1;
-    this.speed = 7;
+    /* up:1, right:2, down:4, left:8 */
+    this.direction = 8;
+    this.speed = 0.15;
 };
 Character.prototype.__proto__ = EventEmitter2.prototype;
- 
+
+Character.prototype.canMove = function(x, y){
+    return !this.maze.collisions[(y * this.maze.width) + x];
+};
+
 Character.prototype.tick = function() {
     var mx = 0, my = 0;
     
     switch (this.direction) {
-        case 0: my -= this.speed; break;
-        case 1: mx += this.speed; break;
-        case 2: my += this.speed; break;
-        case 3: mx -= this.speed; break;
+        case 1: my -= this.speed; break; // move up
+        case 2: mx += this.speed; break; // move right
+        case 4: my += this.speed; break; // move down
+        case 8: mx -= this.speed; break; // move left
     }
     
     // check for wall in front of us
     // if wall - mx = 0, my = 0
+    /*if (!this.canMove(this.x + mx, this.y + my)) {
+        mx = 0;
+        my = 0;
+    }*/
     
     // check for warp tile? or just warp when leaving the screen?
     
-    if ((this.y / 100) << 0 != ((this.y + my) / 100) << 0) {
-        this.atJunction = 1;
-    } else if ((this.x / 100) << 0 != ((this.x + mx) / 100) << 0) {
-        this.atJunction = 2;
+    var atNode = (this.x === this.x << 0 && this.y === this.y << 0)
+        || (this.y << 0 !== (this.y + my) << 0)
+        || (this.x << 0 !== (this.x + mx) << 0)
+    ;
+    
+    if (atNode) {
+        // best guess at which node we're standing on
+        var mazeX = Math.round(this.x + (mx/2));
+        var mazeY = Math.round(this.y + (my/2));
+    
+        // is this node at a junction? if so, what directions can we go in?
+        this.atJunction =
+              (this.canMove(mazeX, mazeY - 1) ? 1 : 0) // can go up
+            | (this.canMove(mazeX + 1, mazeY) ? 2 : 0) // can go right
+            | (this.canMove(mazeX, mazeY + 1) ? 4 : 0) // can go down
+            | (this.canMove(mazeX - 1, mazeY) ? 8 : 0) // can go left
+        ;
+        
+        // if we can't move in this direction any longer...
+        if (!(this.atJunction & this.direction)) {
+            mx = 0;
+            my = 0;
+            this.x = Math.round(this.x);
+            this.y = Math.round(this.y);
+        }
     }
     
     this.x += mx;
@@ -45,8 +75,8 @@ Character.prototype.assignController = function(controller) {
 
 Character.prototype.draw = function(tileSize) {
     this.getKineticShape().setAttrs({
-        x: (this.x / 100) * tileSize,
-        y: (this.y / 100) * tileSize
+        x: this.x * tileSize,
+        y: this.y * tileSize
     });
 };
 
@@ -64,21 +94,21 @@ Character.prototype.getKineticShape = function() {
 
 Character.prototype.changeDirection = function(newDir) {
     switch (newDir) {
-        case 0:
-        case 2:
+        case 1:
+        case 4:
             if (this.atJunction) {
-                this.x = Math.round(this.x / 100) * 100;
+                this.x = Math.round(this.x);
             }
-            if (this.x % 100 === 0) {
+            if (this.x === this.x << 0) {
                 this.direction = newDir;
             }
             break;
-        case 1:
-        case 3:
+        case 2:
+        case 8:
             if (this.atJunction) {
-                this.y = Math.round(this.y / 100) * 100;
+                this.y = Math.round(this.y);
             }
-            if (this.y % 100 === 0) {
+            if (this.y === this.y << 0) {
                 this.direction = newDir;
             }
             break;
