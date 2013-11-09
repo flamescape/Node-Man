@@ -17,11 +17,11 @@ var mazeLayer = new Kinetic.Layer();
 var drawMaze = function() {
     _.each(m.collisions, function(tile, num) {
         mazeLayer.add(new Kinetic.Rect({
-            x: 0,
-            y: 0,
+            x: (num % 28) * 56,
+            y: (num % 31) * 62,
             width: 56,
             height: 62,
-            fill: "#EE0000"
+            fill: (num % 2 === 0) ? "#EEE" : "#222"
         }));
 
     }); 
