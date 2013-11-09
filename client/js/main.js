@@ -16,7 +16,6 @@ var mazeLayer = new Kinetic.Layer();
 
 var drawMaze = function() {
     _.each(m.collisions, function(tile, num) {
-        console.log("Placing tile #" + num + " (" + tile + ") at " + num%28*20 + ", " + Math.floor(num/28)*20);
         mazeLayer.add(new Kinetic.Rect({
             x: (num % 28) * 20,
             y: Math.floor(num / 28) * 20,
