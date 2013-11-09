@@ -5,7 +5,7 @@ var Character = function() {
     this.y = 0;
     /* up:0, right:1, down:2, left:3 */
     this.direction = 1;
-    this.speed = 15;
+    this.speed = 7;
 };
 Character.prototype.__proto__ = EventEmitter2.prototype;
  
@@ -24,15 +24,19 @@ Character.prototype.tick = function() {
     
     // check for warp tile? or just warp when leaving the screen?
     
-    if ((this.y / 100) << 0 != ((this.y + mx) / 100) << 0) {
-        this.emit('atJunction', this.atJunction = 1);
+    if ((this.y / 100) << 0 != ((this.y + my) / 100) << 0) {
+        this.atJunction = 1;
     } else if ((this.x / 100) << 0 != ((this.x + mx) / 100) << 0) {
-        this.emit('atJunction', this.atJunction = 2);
+        this.atJunction = 2;
     }
     
     this.x += mx;
     this.y += my;
-    this.atJunction = 0;
+    
+    if (this.atJunction) {
+        this.emit('atJunction', this.atJunction);
+        this.atJunction = 0;
+    }
 };
 
 Character.prototype.assignController = function(controller) {
