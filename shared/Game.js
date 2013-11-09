@@ -58,6 +58,10 @@ Game.prototype.start = function() {
             this.maze.getSuperPillsLayer().getChildren().each(function(shape) {
                 var rot = shape.getAttr('rotationDeg') + 4;
                 shape.setAttr('rotationDeg', rot);
+
+                var pulseSpeed = 600;
+                var c = Math.sin(Date.now() / pulseSpeed) + 1.5;
+                shape.setAttr('radius', 12 + 2 * c);
             });
             this.draw(); // redraw pills and characters
         }
