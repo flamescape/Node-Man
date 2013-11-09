@@ -102,13 +102,14 @@ Maze.prototype.createWallKineticLayer = function(tileSize, tiles) {
         
         //if (tiles[tile]) return;
         // for debugging
+        /*
         layer.add(new Kinetic.Text({
             x: (idx % this.width) * tileSize,
             y: Math.floor(idx / this.width) * tileSize,
             text: tile.toString(),
             fontSize: 10,
             fill: 'blue'
-        }));
+        }));*/
     }.bind(this));
 
     return layer;

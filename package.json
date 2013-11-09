@@ -16,7 +16,8 @@
     "socket.io": "~0.9.16",
     "underscore": "~1.5.2",
     "express": "~3.4.4",
-    "colors": "~0.6.2"
+    "colors": "~0.6.2",
+    "eventemitter2": "~0.4.13"
   },
   "engines": {
     "node": "0.10.x"
