@@ -1,3 +1,14 @@
+# Node-Man
+Node-Man is a re-imaging of a classic Namco™ arcade game.
+
+## Team
+John Ballantyne
+Gareth Hughes
+
+## Packages
+Express
+Socket.IO
+
 ## Quick Start
 
 ~~~sh
