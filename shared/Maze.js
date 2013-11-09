@@ -147,6 +147,7 @@ Maze.prototype.createPillsLayer = function(tileSize, tiles) {
                 y: Math.floor(idx / this.width) * tileSize + tileSize * 0.5,
                 radius: 12,
                 sides: 6,
+                rotationDeg: Math.random() * (360 - 1) + 1,
                 fill: "#FFF"
             }));
         }
