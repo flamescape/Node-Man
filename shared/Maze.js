@@ -1,3 +1,6 @@
+if (SERVER) {
+    var _ = require('underscore');
+}
 
 var Maze = function(){
 
@@ -24,5 +27,12 @@ Maze.prototype.load = function(levelNum, cb) {
 };
 
 Maze.prototype.parse = function(data) {
-    console.log('parsing', data);
+    data = data.replace(/\r\n/g, '').split('');
+    this.collisions = _.map(data, function(tile){
+        return tile === '#' ? 1 : 0;
+    });
+    this.pills = _.map(data, function(tile){
+        return tile === '.' ? 1 : (tile === '@' ? 2 : 0);
+    });
+    console.log(this);
 };
