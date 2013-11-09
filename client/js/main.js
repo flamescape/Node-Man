@@ -3,6 +3,7 @@ g.loadLevel(1);
 var c = g.addCharacter(new Character());
 c.x = 13.5*100;
 c.y = 23*100;
+c.on('passedJunction', console.log.bind(console,'junction'));
 g.once('mazeLoaded', g.start.bind(g));
 
 var loadImages = function(callback) {
