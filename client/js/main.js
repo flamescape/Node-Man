@@ -79,6 +79,7 @@ var drawMaze = function(tiles) {
                 y: Math.floor(num / mazeWidth) * tSize + tSize * 0.5,
                 radius: 4,
                 sides: 6,
+                rotationDeg: Math.random() * (360 - 1) + 1,
                 fill: "#FFF"
             }));
         }
