@@ -1,14 +1,14 @@
 ![Node-Man logo](http://i.imgur.com/BRGyiql.png)
 
-Node-Man is a re-imaging of a classic Namco™ arcade game.
+Node-Man is a re-imagining of a classic Namco™ arcade game.
 
-## Team
+## Team (in order of importance)
 John Ballantyne
 Gareth Hughes
 
 ## Packages
-Express
-Socket.IO
+ - Express
+ - Socket.IO
 
 ## Quick Start
 
