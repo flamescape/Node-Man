@@ -83,3 +83,33 @@ Maze.prototype.parse = function(data) {
         );
     }.bind(this));
 };
+
+Maze.prototype.createWallKineticLayer = function(tileSize, tiles) {
+    var layer = new Kinetic.Layer();
+
+    _.each(this.wallDecor, function(tile, idx) {
+        // don't draw blanks
+        if (!tile)
+            return;
+        
+        layer.add(new Kinetic.Rect({
+            x: (idx % this.width) * tileSize,
+            y: Math.floor(idx / this.width) * tileSize,
+            width: tileSize,
+            height: tileSize,
+            fillPatternImage: tiles[tile] ? tiles[tile] : tiles.wall
+        }));
+        
+        //if (tiles[tile]) return;
+        // for debugging
+        layer.add(new Kinetic.Text({
+            x: (idx % this.width) * tileSize,
+            y: Math.floor(idx / this.width) * tileSize,
+            text: tile.toString(),
+            fontSize: 10,
+            fill: 'blue'
+        }));
+    });
+
+    return layer;
+};

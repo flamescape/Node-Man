@@ -6,7 +6,10 @@ m.load(1, function(err){
     if (err) throw err;
     
     // loaded maze into m
-    loadImages(drawMaze);
+    loadImages(function(tiles){
+        drawMaze(tiles);
+        stage.add(m.createWallKineticLayer(24, tiles));
+    });
 });
 
 var loadImages = function(callback) {
@@ -43,34 +46,9 @@ var stage = new Kinetic.Stage({
     height: 744 
 });
 
-var mazeLayer = new Kinetic.Layer();
 var pillsLayer = new Kinetic.Layer();
 
 var drawMaze = function(tiles) {
-
-    _.each(m.wallDecor, function(tile, num) {
-        // don't draw blanks
-        if (!tile)
-            return;
-        
-        mazeLayer.add(new Kinetic.Rect({
-            x: (num % mazeWidth) * tSize,
-            y: Math.floor(num / mazeWidth) * tSize,
-            width: tSize,
-            height: tSize,
-            fillPatternImage: tiles[tile] ? tiles[tile] : tiles.wall
-        }));
-        
-        //if (tiles[tile]) return;
-        // for debugging
-        mazeLayer.add(new Kinetic.Text({
-            x: (num % mazeWidth) * tSize,
-            y: Math.floor(num / mazeWidth) * tSize,
-            text: tile.toString(),
-            fontSize: 10,
-            fill: 'blue'
-        }));
-    }); 
 
     _.each(m.pills, function(pill, num) {
         if (pill === 1) {
@@ -85,7 +63,6 @@ var drawMaze = function(tiles) {
 
     }); 
 
-    stage.add(mazeLayer);
     stage.add(pillsLayer);
 };
 
