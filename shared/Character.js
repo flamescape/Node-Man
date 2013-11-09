@@ -22,8 +22,13 @@ Character.prototype.tick = function() {
     // check for wall in front of us
     // if wall - mx = 0, my = 0
     
+    // check for warp tile? or just warp when leaving the screen?
+    
     this.x += mx;
     this.y += my;
+};
+
+Character.prototype.draw = function() {
 };
 
 Character.prototype.changeDirection = function(newDir) {
