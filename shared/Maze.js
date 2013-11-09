@@ -27,7 +27,8 @@ Maze.prototype.load = function(levelNum, cb) {
 };
 
 Maze.prototype.parse = function(data) {
-    data = data.replace(/\r\n/g, '').split('');
+    data = data.replace(/\s/gm, '').split('');
+    console.log(data);
     this.collisions = _.map(data, function(tile){
         return tile === '#' ? 1 : 0;
     });
