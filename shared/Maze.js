@@ -10,7 +10,7 @@ Maze.prototype.load = function(levelNum, cb) {
     var fn = 'levels/'+levelNum+'.txt';
     
     if (SERVER) {
-        require('fs').readFile(fn, function(err, data){
+        require('fs').readFile(path.join(__dirname, fn), function(err, data){
             this.parse(data);
             return cb&&cb(err);
         }.bind(this));
