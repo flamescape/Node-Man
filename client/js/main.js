@@ -33,8 +33,8 @@ var loadImages = function(callback) {
 
 var stage = new Kinetic.Stage({
     container: 'maze',
-    width: 560,
-    height: 620
+    width: 672,
+    height: 744 
 });
 
 var mazeLayer = new Kinetic.Layer();
@@ -44,10 +44,10 @@ var drawMaze = function(tiles) {
 
     _.each(m.collisions, function(tile, num) {
         mazeLayer.add(new Kinetic.Rect({
-            x: (num % 28) * 20,
-            y: Math.floor(num / 28) * 20,
-            width: 20,
-            height: 20,
+            x: (num % 28) * 24,
+            y: Math.floor(num / 28) * 24,
+            width: 24,
+            height: 24,
             fillPatternImage: (tile === 1 ? tiles.wall : null)
         }));
 
@@ -56,8 +56,8 @@ var drawMaze = function(tiles) {
     _.each(m.pills, function(pill, num) {
         if (pill === 1) {
             mazeLayer.add(new Kinetic.RegularPolygon({
-                x: (num % 28) * 20 + 10,
-                y: Math.floor(num / 28) * 20 + 10,
+                x: (num % 28) * 24 + 10,
+                y: Math.floor(num / 28) * 24 + 10,
                 radius: 4,
                 sides: 6,
                 fill: "#FFF"
