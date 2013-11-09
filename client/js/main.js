@@ -9,8 +9,11 @@ m.load(1, function(err){
 var loadImages = function(callback) {
     var tiles = {};
     var sources = {
-        wall: 'img/tiles/wall-tile.png',
+        wall: 'img/tiles/wall-tile.png'
     };
+    [208,214,248].forEach(function(i){
+        sources[i] = 'img/tiles/'+i+'.png';
+    });
 
     var loadedImages = 0;
     var numImages = 0;
@@ -43,12 +46,16 @@ var pillsLayer = new Kinetic.Layer();
 var drawMaze = function(tiles) {
 
     _.each(m.wallDecor, function(tile, num) {
+        // don't draw blanks
+        if (!tile)
+            return;
+        
         mazeLayer.add(new Kinetic.Rect({
             x: (num % 28) * 24,
             y: Math.floor(num / 28) * 24,
             width: 24,
             height: 24,
-            fillPatternImage: (tile ? tiles.wall : null)
+            fillPatternImage: tiles[tile] ? tiles[tile] : tiles.wall
         }));
         // for debugging
         mazeLayer.add(new Kinetic.Text({
