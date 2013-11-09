@@ -38,6 +38,7 @@ var stage = new Kinetic.Stage({
 });
 
 var mazeLayer = new Kinetic.Layer();
+var pillsLayer = new Kinetic.Layer();
 
 var drawMaze = function(tiles) {
 
@@ -52,6 +53,20 @@ var drawMaze = function(tiles) {
 
     }); 
 
+    _.each(m.pills, function(pill, num) {
+        if (pill === 1) {
+            mazeLayer.add(new Kinetic.RegularPolygon({
+                x: (num % 28) * 20 + 10,
+                y: Math.floor(num / 28) * 20 + 10,
+                radius: 4,
+                sides: 6,
+                fill: "#FFF"
+            }));
+        }
+
+    }); 
+
     stage.add(mazeLayer);
+    stage.add(pillsLayer);
 };
 
