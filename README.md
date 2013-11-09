@@ -3,8 +3,8 @@
 Node-Man is a re-imagining of a classic Namco™ arcade game.
 
 ## Team (in order of importance)
- - John Ballantyne
  - Gareth Hughes
+ - John Ballantyne
 
 ## Packages
  - Express
