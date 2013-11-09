@@ -148,7 +148,11 @@ Maze.prototype.createPillsLayer = function(tileSize, tiles) {
                 radius: 12,
                 sides: 6,
                 rotationDeg: Math.random() * (360 - 1) + 1,
-                fill: "#FFF"
+                fill: "#FFF",
+                shadowColor: "888",
+                shadowBlur: 1,
+                shadowOffsetX: 2,
+                shadowOffsetY: 2
             }));
         }
     }.bind(this));
