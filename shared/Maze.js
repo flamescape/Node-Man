@@ -50,6 +50,7 @@ Maze.prototype.parse = function(data) {
     });
     
     var tileAt = function(idx) {
+        // if tile is outside the map, consider it solid
         if (idx < 0 || idx >= this.collisions.length)
             return 1;
         
@@ -61,14 +62,14 @@ Maze.prototype.parse = function(data) {
         if (!tile)
             return 0;
         
-        return (tileAt(idx+1) ? 1 : 0)
-             | (tileAt(idx+1+this.width) ? 2 : 0)
+        return (tileAt(idx+1) || (idx === this.width-1) ? 1 : 0)
+             | (tileAt(idx+1+this.width) || (idx === this.width-1) ? 2 : 0)
              | (tileAt(idx+this.width) ? 4 : 0)
-             | (tileAt(idx+this.width-1) ? 8 : 0)
-             | (tileAt(idx-1) ? 16 : 0)
-             | (tileAt(idx-this.width-1) ? 32 : 0)
+             | (tileAt(idx+this.width-1) || (idx === 0) ? 8 : 0)
+             | (tileAt(idx-1) || (idx === 0) ? 16 : 0)
+             | (tileAt(idx-this.width-1) || (idx === 0) ? 32 : 0)
              | (tileAt(idx-this.width) ? 64 : 0)
-             | (tileAt(idx+1-this.width) ? 128 : 0)
+             | (tileAt(idx+1-this.width) || (idx === this.width-1) ? 128 : 0)
              ;
     });
     
