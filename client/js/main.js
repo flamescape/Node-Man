@@ -11,7 +11,7 @@ var loadImages = function(callback) {
     var sources = {
         wall: 'img/tiles/wall-tile.png'
     };
-    [208,214,248,255,107,11,31,104,22,111,127,63,223,159,215,246,235,252,249].forEach(function(i){
+    [208,214,248,255,107,11,31,104,22,111,127,63,223,159,215,246,235,252,249,251].forEach(function(i){
         sources[i] = 'img/tiles/'+i+'.png';
     });
 
