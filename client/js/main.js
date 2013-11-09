@@ -11,7 +11,7 @@ var loadImages = function(callback) {
     var sources = {
         wall: 'img/tiles/wall-tile.png'
     };
-    [208,214,248,255,107,11,31,104,22].forEach(function(i){
+    [208,214,248,255,107,11,31,104,22,111,127,63,223].forEach(function(i){
         sources[i] = 'img/tiles/'+i+'.png';
     });
 
@@ -58,7 +58,7 @@ var drawMaze = function(tiles) {
             fillPatternImage: tiles[tile] ? tiles[tile] : tiles.wall
         }));
         
-        if (tiles[tile]) return;
+        //if (tiles[tile]) return;
         // for debugging
         mazeLayer.add(new Kinetic.Text({
             x: (num % 28) * 24,
