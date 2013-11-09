@@ -68,7 +68,7 @@ Maze.prototype.parse = function(data) {
           , isRightmost = idx%this.width === this.width-1
           ;
         
-       var decor = 
+        var decor = 
             // above
               ((tileAt(idxA-1) || isLeftmost) ? 1 : 0)
             | (tileAt(idxA) ? 2 : 0)
@@ -88,7 +88,6 @@ Maze.prototype.parse = function(data) {
             case 111: decor = 235; break;
             case 215: decor = 246; break;
             case 249: decor = 252; break;
-            default: break;
         }
 
         return decor;
@@ -96,19 +95,15 @@ Maze.prototype.parse = function(data) {
 
 };
 
-Maze.prototype.getWallLayer = function(tileSize, tiles) {
-    if (this.wallLayer) {
-        return this.wallLayer;
-    }
-
-    this.wallLayer = new Kinetic.Layer();
+Maze.prototype.createWallLayer = function(tileSize, tiles) {
+    var layer = this.getWallLayer();
 
     _.each(this.wallDecor, function(tile, idx) {
         // don't draw blanks
         if (!tile)
             return;
         
-        this.wallLayer.add(new Kinetic.Rect({
+        layer.add(new Kinetic.Rect({
             x: (idx % this.width) * tileSize,
             y: Math.floor(idx / this.width) * tileSize,
             width: tileSize,
@@ -119,7 +114,7 @@ Maze.prototype.getWallLayer = function(tileSize, tiles) {
         //if (tiles[tile]) return;
         // for debugging
         /*
-        this.wallLayer.add(new Kinetic.Text({
+        layer.add(new Kinetic.Text({
             x: (idx % this.width) * tileSize,
             y: Math.floor(idx / this.width) * tileSize,
             text: tile.toString(),
@@ -127,20 +122,18 @@ Maze.prototype.getWallLayer = function(tileSize, tiles) {
             fill: 'green'
         }));*/
     }.bind(this));
-
-    return this.wallLayer;
 };
 
-Maze.prototype.getPillsLayer = function(tileSize, tiles) {
-    if (this.pillsLayer) {
-        return this.pillsLayer;
-    }
-    
-    this.pillsLayer = new Kinetic.Layer();
+Maze.prototype.getWallLayer = function() {
+    return this.wallLayer || (this.wallLayer = new Kinetic.Layer());
+};
+
+Maze.prototype.createPillsLayer = function(tileSize, tiles) {
+    var layer = this.getPillsLayer();
     
     _.each(this.pills, function(pill, idx) {
         if (pill === 1) {
-            this.pillsLayer.add(new Kinetic.RegularPolygon({
+            layer.add(new Kinetic.RegularPolygon({
                 x: (idx % this.width) * tSize + tSize * 0.5,
                 y: Math.floor(idx / this.width) * tSize + tSize * 0.5,
                 radius: 4,
@@ -149,7 +142,7 @@ Maze.prototype.getPillsLayer = function(tileSize, tiles) {
                 fill: "#FFF"
             }));
         } else if (pill === 2) {
-            this.pillsLayer.add(new Kinetic.RegularPolygon({
+            layer.add(new Kinetic.RegularPolygon({
                 x: (idx % this.width) * tSize + tSize * 0.5,
                 y: Math.floor(idx / this.width) * tSize + tSize * 0.5,
                 radius: 12,
@@ -157,7 +150,9 @@ Maze.prototype.getPillsLayer = function(tileSize, tiles) {
                 fill: "#FFF"
             }));
         }
-    }.bind(this)); 
+    }.bind(this));
+};
 
-    return this.pillsLayer;
+Maze.prototype.getPillsLayer = function() {
+    return this.pillsLayer || (this.pillsLayer = new Kinetic.Layer());
 };

@@ -2,6 +2,7 @@ var tSize = 24;
 
 var g = new Game();
 g.loadLevel(1);
+g.start();
 
 var loadImages = function(callback) {
     var tiles = {};

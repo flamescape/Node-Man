@@ -5,7 +5,7 @@ var Game = function() {
 Game.prototype.__proto__ = EventEmitter2.prototype;
 
 Game.prototype.addCharacter = function(character) {
-    this.characterLayer.add(character.getKineticShape());
+    //this.characterLayer.add(character.getKineticShape());
 };
 
 Game.prototype.loadLevel = function(level) {
@@ -18,11 +18,13 @@ Game.prototype.loadLevel = function(level) {
             width: this.maze.width * tSize,
             height: this.maze.height * tSize
         });
+        stage.add(this.maze.getWallLayer());
+        stage.add(this.maze.getPillsLayer());
         
         // loaded maze into m
         loadImages(function(tiles){
-            stage.add(this.maze.getWallLayer(tSize, tiles));
-            stage.add(this.maze.getPillsLayer(tSize, tiles));
+            this.maze.createWallLayer(tSize, tiles);
+            this.maze.createPillsLayer(tSize, tiles);
         }.bind(this));
     }.bind(this));
 };
@@ -40,6 +42,9 @@ Game.prototype.stop = function() {
 };
 
 Game.prototype.draw = function() {
+    this.maze.getWallLayer().batchDraw();
+    this.maze.getPillsLayer().batchDraw();
+    
 };
 
 Game.prototype.tick = function() {
