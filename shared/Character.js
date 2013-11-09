@@ -80,15 +80,15 @@ Character.prototype.draw = function(tileSize) {
     });
 };
 
-Character.prototype.getKineticShape = function() {
+Character.prototype.getKineticShape = function(tile) {
     return this.kineticShape || (this.kineticShape = new Kinetic.Rect({
-        width: 40,
+        width: 35,
         height: 40,
         x: 0,
         y: 0,
         offsetX: 8,
         offsetY: 8,
-        fill: 'white'
+        fillPatternImage: tile
     }));
 };
 
