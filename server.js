@@ -1,3 +1,6 @@
+// a globally defined truth
+global.SERVER = true;
+
 // https://github.com/nko4/website/blob/master/module/README.md#nodejs-knockout-deploy-check-ins
 require('nko')('AMR6PQQjUxHNpPiC');
 require('colors');
@@ -6,6 +9,7 @@ var express = require('express')
   , app = express()
   , server = require('http').createServer(app)
   , io = require('socket.io').listen(server, {log:false})
+  , GameRoom = require('./shared/GameRoom')
   ;
 
 server.listen(process.env.NODE_ENV === 'production' ? 80 : 8000, function(err) {
