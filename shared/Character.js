@@ -64,7 +64,7 @@ Character.prototype.tick = function(delta) {
     this.y += my;
     
     if (this.atJunction) {
-        this.emit('atJunction', this.atJunction);
+        this.emit('atJunction', this.atJunction, Math.round(this.x), Math.round(this.y));
         this.atJunction = 0;
     }
 };

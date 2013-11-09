@@ -1,7 +1,7 @@
 var g = new Game();
 g.loadLevel(1);
 g.once('mazeLoaded', function(){
-    var c = g.addCharacter(new Character(g.maze));
+    var c = g.addCharacter(new CharacterNodeman(g.maze));
     c.x = 13.5;
     c.y = 23;
     c.assignController(new LocalController(c));
