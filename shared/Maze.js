@@ -62,17 +62,24 @@ Maze.prototype.parse = function(data) {
         if (!tile)
             return 0;
         
-        return (tileAt(idx+1) || (idx === this.width-1) ? 1 : 0)
-             | (tileAt(idx+1+this.width) || (idx === this.width-1) ? 2 : 0)
-             | (tileAt(idx+this.width) ? 4 : 0)
-             | (tileAt(idx+this.width-1) || (idx === 0) ? 8 : 0)
-             | (tileAt(idx-1) || (idx === 0) ? 16 : 0)
-             | (tileAt(idx-this.width-1) || (idx === 0) ? 32 : 0)
-             | (tileAt(idx-this.width) ? 64 : 0)
-             | (tileAt(idx+1-this.width) || (idx === this.width-1) ? 128 : 0)
-             ;
-    });
-    
-    //console.log(this.decor);
-    
+        var idxA = idx-this.width
+          , idxB = idx+this.width
+          , isLeftmost = idx%this.width === 0
+          , isRightmost = idx%this.width === this.width-1
+          ;
+        
+        return (
+            // above
+              ((tileAt(idxA-1) || isLeftmost) ? 1 : 0)
+            | (tileAt(idxA) ? 2 : 0)
+            | ((tileAt(idxA+1) || isRightmost) ? 4 : 0)
+            // sides
+            | ((tileAt(idx-1) || isLeftmost) ? 8 : 0)
+            | ((tileAt(idx+1) || isRightmost) ? 16 : 0)
+            // below
+            | ((tileAt(idxB-1) || isLeftmost) ? 32 : 0)
+            | (tileAt(idxB) ? 64 : 0)
+            | ((tileAt(idxB+1) || isRightmost) ? 128 : 0)
+        );
+    }.bind(this));
 };
