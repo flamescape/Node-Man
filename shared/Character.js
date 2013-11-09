@@ -24,8 +24,19 @@ Character.prototype.tick = function() {
     
     // check for warp tile? or just warp when leaving the screen?
     
+    if ((this.y / 100) << 0 != ((this.y + mx) / 100) << 0) {
+        this.emit('atJunction', this.atJunction = 1);
+    } else if ((this.x / 100) << 0 != ((this.x + mx) / 100) << 0) {
+        this.emit('atJunction', this.atJunction = 2);
+    }
+    
     this.x += mx;
     this.y += my;
+    this.atJunction = 0;
+};
+
+Character.prototype.assignController = function(controller) {
+    this.controller = controller;
 };
 
 Character.prototype.draw = function(tileSize) {
@@ -37,10 +48,12 @@ Character.prototype.draw = function(tileSize) {
 
 Character.prototype.getKineticShape = function() {
     return this.kineticShape || (this.kineticShape = new Kinetic.Rect({
-        width: 24,
-        height: 24,
+        width: 40,
+        height: 40,
         x: 0,
         y: 0,
+        offsetX: 8,
+        offsetY: 8,
         fill: 'white'
     }));
 };
@@ -49,12 +62,18 @@ Character.prototype.changeDirection = function(newDir) {
     switch (newDir) {
         case 0:
         case 2:
+            if (this.atJunction) {
+                this.x = Math.round(this.x / 100) * 100;
+            }
             if (this.x % 100 === 0) {
                 this.direction = newDir;
             }
             break;
         case 1:
         case 3:
+            if (this.atJunction) {
+                this.y = Math.round(this.y / 100) * 100;
+            }
             if (this.y % 100 === 0) {
                 this.direction = newDir;
             }
