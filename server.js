@@ -14,7 +14,7 @@ var express = require('express')
 
 server.listen(process.env.NODE_ENV === 'production' ? 80 : 8000, function(err) {
     if (err) { console.error(err); process.exit(-1); }
-
+    console.log((new Date()).toString(), 'Listening...');
     // if run as root, downgrade to the owner of this file
     if (process.getuid && process.getuid() === 0) {
         require('fs').stat(__filename, function(err, stats) {
@@ -22,6 +22,11 @@ server.listen(process.env.NODE_ENV === 'production' ? 80 : 8000, function(err) {
             process.setuid(stats.uid);
         });
     }
+});
+
+app.use(function(req, res, next){
+    console.log('Request rec\'d', req.url);
+    next();
 });
 
 app.use(express.static('client'));
