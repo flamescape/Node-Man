@@ -13,6 +13,7 @@ var Game = function() {
     
         this.stage.add(this.maze.getWallLayer());
         this.stage.add(this.maze.getPillsLayer());
+        this.stage.add(this.maze.getSuperPillsLayer());
         this.stage.add(this.characterLayer);
     }.bind(this));
 };
@@ -30,6 +31,15 @@ Game.prototype.loadLevel = function(level) {
     this.maze = new Maze();
     this.maze.load(1, function(err){
         if (err) throw err;
+        
+        var stage = new Kinetic.Stage({
+            container: 'maze',
+            width: this.maze.width * this.tileSize,
+            height: this.maze.height * this.tileSize
+        });
+        stage.add(this.maze.getWallLayer());
+        stage.add(this.maze.getPillsLayer());
+        stage.add(this.maze.getSuperPillsLayer());
         
         // loaded maze into m
         loadImages(function(tiles){
@@ -57,6 +67,8 @@ Game.prototype.stop = function() {
 Game.prototype.draw = function() {
     this.maze.getWallLayer().batchDraw();
     this.maze.getPillsLayer().batchDraw();
+    this.maze.getSuperPillsLayer().batchDraw();
+    
     this.characters.forEach(function(c){
         c.draw(this.tileSize);
     }.bind(this));
