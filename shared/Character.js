@@ -6,7 +6,7 @@ var Character = function(maze) {
     this.y = 0;
     /* up:1, right:2, down:4, left:8 */
     this.direction = 8;
-    this.speed = 0.15;
+    this.speed = 0.26;
 };
 Character.prototype.__proto__ = EventEmitter2.prototype;
 
