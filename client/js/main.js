@@ -42,15 +42,22 @@ var pillsLayer = new Kinetic.Layer();
 
 var drawMaze = function(tiles) {
 
-    _.each(m.collisions, function(tile, num) {
+    _.each(m.wallDecor, function(tile, num) {
         mazeLayer.add(new Kinetic.Rect({
             x: (num % 28) * 24,
             y: Math.floor(num / 28) * 24,
             width: 24,
             height: 24,
-            fillPatternImage: (tile === 1 ? tiles.wall : null)
+            fillPatternImage: (tile ? tiles.wall : null)
         }));
-
+        // for debugging
+        mazeLayer.add(new Kinetic.Text({
+            x: (num % 28) * 24,
+            y: Math.floor(num / 28) * 24,
+            text: tile.toString(),
+            fontSize: 10,
+            fill: 'green'
+        }));
     }); 
 
     _.each(m.pills, function(pill, num) {
