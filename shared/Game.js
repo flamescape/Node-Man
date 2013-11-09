@@ -18,6 +18,16 @@ var Game = function() {
     }.bind(this));
 };
 Game.prototype.tileSize = 24;
+Game.prototype.fps = 60;
+
+Game.prototype.calcDelta = function(){
+    var delta = 0;
+    if (this._prevTick) {
+        delta = Date.now() - this._prevTick;
+    }
+    this._prevTick = Date.now();
+    return delta && delta / (1000/this.fps);
+};
 
 Game.prototype.__proto__ = EventEmitter2.prototype;
 
@@ -45,6 +55,7 @@ Game.prototype.loadLevel = function(level) {
         loadImages(function(tiles){
             this.maze.createWallLayer(this.tileSize, tiles);
             this.maze.createPillsLayer(this.tileSize, tiles);
+            this.maze.getWallLayer().batchDraw();
             this.emit('mazeLoaded');
         }.bind(this));
     }.bind(this));
@@ -58,7 +69,7 @@ Game.prototype.start = function() {
             this.animateSuperPills(4, 155);
             this.draw(); // redraw pills and characters
         }
-    }.bind(this), 1000/60);
+    }.bind(this), 1000/this.fps);
 };
 
 Game.prototype.stop = function() {
@@ -66,9 +77,6 @@ Game.prototype.stop = function() {
 };
 
 Game.prototype.draw = function() {
-    //↓↓↓ THIS IS WRONG, IT SHOULD NOT BE HERE, ARE YOU KIDDING??? WE DON'T NEED TO DRAW THIS EVERY TIME!!!
-    this.maze.getWallLayer().batchDraw();
-    //TODO: FIX THIS ↑↑↑
     this.maze.getPillsLayer().batchDraw();
     this.maze.getSuperPillsLayer().batchDraw();
     
@@ -79,8 +87,12 @@ Game.prototype.draw = function() {
 };
 
 Game.prototype.tick = function() {
+    var delta = this.calcDelta();
+    if (!delta) // no time has passed since last update?
+        return;
+        
     this.characters.forEach(function(c){
-        c.tick();
+        c.tick(delta);
     }.bind(this));
 };
 
