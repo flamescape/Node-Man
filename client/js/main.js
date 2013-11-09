@@ -16,12 +16,13 @@ var mazeLayer = new Kinetic.Layer();
 
 var drawMaze = function() {
     _.each(m.collisions, function(tile, num) {
+        console.log("Placing tile #" + num + " (" + tile + ") at " + num%28*20 + ", " + Math.floor(num/28)*20);
         mazeLayer.add(new Kinetic.Rect({
-            x: (num % 28) * 56,
-            y: (num % 31) * 62,
-            width: 56,
-            height: 62,
-            fill: (num % 2 === 0) ? "#EEE" : "#222"
+            x: (num % 28) * 20,
+            y: Math.floor(num / 28) * 20,
+            width: 20,
+            height: 20,
+            fill: (tile === 0) ? "#EEE" : "#222"
         }));
 
     }); 
