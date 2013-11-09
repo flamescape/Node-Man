@@ -28,7 +28,14 @@ Character.prototype.tick = function() {
     this.y += my;
 };
 
-Character.prototype.draw = function() {
+Character.prototype.getKineticShape = function() {
+    return this.kineticShape || (this.kineticShape = new Kinetic.Rect({
+        width: 24,
+        height: 24,
+        x: 0,
+        y: 0,
+        fill: 'white'
+    }));
 };
 
 Character.prototype.changeDirection = function(newDir) {

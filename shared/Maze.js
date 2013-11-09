@@ -84,15 +84,19 @@ Maze.prototype.parse = function(data) {
     }.bind(this));
 };
 
-Maze.prototype.createWallKineticLayer = function(tileSize, tiles) {
-    var layer = new Kinetic.Layer();
+Maze.prototype.getWallLayer = function(tileSize, tiles) {
+    if (this.wallLayer) {
+        return this.wallLayer;
+    }
+
+    this.wallLayer = new Kinetic.Layer();
 
     _.each(this.wallDecor, function(tile, idx) {
         // don't draw blanks
         if (!tile)
             return;
         
-        layer.add(new Kinetic.Rect({
+        this.wallLayer.add(new Kinetic.Rect({
             x: (idx % this.width) * tileSize,
             y: Math.floor(idx / this.width) * tileSize,
             width: tileSize,
@@ -103,7 +107,7 @@ Maze.prototype.createWallKineticLayer = function(tileSize, tiles) {
         //if (tiles[tile]) return;
         // for debugging
         /*
-        layer.add(new Kinetic.Text({
+        this.wallLayer.add(new Kinetic.Text({
             x: (idx % this.width) * tileSize,
             y: Math.floor(idx / this.width) * tileSize,
             text: tile.toString(),
@@ -112,15 +116,19 @@ Maze.prototype.createWallKineticLayer = function(tileSize, tiles) {
         }));*/
     }.bind(this));
 
-    return layer;
+    return this.wallLayer;
 };
 
-Maze.prototype.createPillsKineticLayer = function(tileSize, tiles) {
-    var layer = new Kinetic.Layer();
+Maze.prototype.getPillsLayer = function(tileSize, tiles) {
+    if (this.pillsLayer) {
+        return this.pillsLayer;
+    }
+    
+    this.pillsLayer = new Kinetic.Layer();
     
     _.each(this.pills, function(pill, idx) {
         if (pill === 1) {
-            layer.add(new Kinetic.RegularPolygon({
+            this.pillsLayer.add(new Kinetic.RegularPolygon({
                 x: (idx % this.width) * tSize + tSize * 0.5,
                 y: Math.floor(idx / this.width) * tSize + tSize * 0.5,
                 radius: 4,
@@ -129,7 +137,7 @@ Maze.prototype.createPillsKineticLayer = function(tileSize, tiles) {
                 fill: "#FFF"
             }));
         } else if (pill === 2) {
-            layer.add(new Kinetic.RegularPolygon({
+            this.pillsLayer.add(new Kinetic.RegularPolygon({
                 x: (idx % this.width) * tSize + tSize * 0.5,
                 y: Math.floor(idx / this.width) * tSize + tSize * 0.5,
                 radius: 12,
@@ -137,8 +145,7 @@ Maze.prototype.createPillsKineticLayer = function(tileSize, tiles) {
                 fill: "#FFF"
             }));
         }
-
     }.bind(this)); 
 
-    return layer;
+    return this.pillsLayer;
 };

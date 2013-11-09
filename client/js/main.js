@@ -1,21 +1,7 @@
 var tSize = 24;
 
-var m = new Maze();
-m.load(1, function(err){
-    if (err) throw err;
-    
-    var stage = new Kinetic.Stage({
-        container: 'maze',
-        width: m.width * tSize,
-        height: m.height * tSize
-    });
-    
-    // loaded maze into m
-    loadImages(function(tiles){
-        stage.add(m.createWallKineticLayer(tSize, tiles));
-        stage.add(m.createPillsKineticLayer(tSize, tiles));
-    });
-});
+var g = new Game();
+g.loadLevel(1);
 
 var loadImages = function(callback) {
     var tiles = {};
