@@ -5,16 +5,17 @@ global.SERVER = true;
 require('nko')('AMR6PQQjUxHNpPiC');
 require('colors');
 
-var express = require('express')
+var port = process.env.NODE_ENV === 'production' ? 80 : 8000
+  , express = require('express')
   , app = express()
   , server = require('http').createServer(app)
   , io = require('socket.io').listen(server, {log:false})
   , GameRoom = require('./shared/GameRoom')
   ;
 
-server.listen(process.env.NODE_ENV === 'production' ? 80 : 8000, function(err) {
+server.listen(port, function(err) {
     if (err) { console.error(err); process.exit(-1); }
-    console.log((new Date()).toString(), 'Listening...');
+    console.log((new Date()).toString(), 'Listening on port', port);
     // if run as root, downgrade to the owner of this file
     if (process.getuid && process.getuid() === 0) {
         require('fs').stat(__filename, function(err, stats) {
@@ -25,7 +26,7 @@ server.listen(process.env.NODE_ENV === 'production' ? 80 : 8000, function(err) {
 });
 
 app.use(function(req, res, next){
-    console.log('Request rec\'d', req.url);
+    console.log('Request rec\'d from', req.ip, req.url);
     next();
 });
 
