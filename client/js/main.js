@@ -72,8 +72,8 @@ var drawMaze = function(tiles) {
     _.each(m.pills, function(pill, num) {
         if (pill === 1) {
             mazeLayer.add(new Kinetic.RegularPolygon({
-                x: (num % 28) * 24 + 10,
-                y: Math.floor(num / 28) * 24 + 10,
+                x: (num % 28) * 24 + 10 + 2,
+                y: Math.floor(num / 28) * 24 + 10 + 2,
                 radius: 4,
                 sides: 6,
                 fill: "#FFF"
