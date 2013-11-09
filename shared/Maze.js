@@ -68,7 +68,7 @@ Maze.prototype.parse = function(data) {
           , isRightmost = idx%this.width === this.width-1
           ;
         
-        return (
+       var decor = 
             // above
               ((tileAt(idxA-1) || isLeftmost) ? 1 : 0)
             | (tileAt(idxA) ? 2 : 0)
@@ -80,8 +80,20 @@ Maze.prototype.parse = function(data) {
             | ((tileAt(idxB-1) || isLeftmost) ? 32 : 0)
             | (tileAt(idxB) ? 64 : 0)
             | ((tileAt(idxB+1) || isRightmost) ? 128 : 0)
-        );
+        ;
+
+        //Some tiles are duplicates, here's a better band-aid to fix that. Saves loooaaads of network bandwidth.
+        switch(decor) {
+            case 159: decor = 63; break;
+            case 111: decor = 235; break;
+            case 215: decor = 246; break;
+            case 249: decor = 252; break;
+            default: break;
+        }
+
+        return decor;
     }.bind(this));
+
 };
 
 Maze.prototype.createWallKineticLayer = function(tileSize, tiles) {
@@ -108,7 +120,7 @@ Maze.prototype.createWallKineticLayer = function(tileSize, tiles) {
             y: Math.floor(idx / this.width) * tileSize,
             text: tile.toString(),
             fontSize: 10,
-            fill: 'blue'
+            fill: 'green'
         }));*/
     }.bind(this));
 
