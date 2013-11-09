@@ -1,4 +1,5 @@
-# Node-Man
+![Node-Man logo](http://i.imgur.com/BRGyiql.png)
+
 Node-Man is a re-imaging of a classic Namco™ arcade game.
 
 ## Team
