@@ -89,7 +89,6 @@ Maze.prototype.parse = function(data) {
             case 215: decor = 246; break;
             case 249: decor = 252; break;
         }
-
         return decor;
     }.bind(this));
 

@@ -13,6 +13,7 @@ var Game = function() {
     
         this.stage.add(this.maze.getWallLayer());
         this.stage.add(this.maze.getPillsLayer());
+        this.stage.add(this.maze.getSuperPillsLayer());
         this.stage.add(this.characterLayer);
     }.bind(this));
 };
@@ -43,7 +44,6 @@ Game.prototype.loadLevel = function(level) {
         loadImages(function(tiles){
             this.maze.createWallLayer(this.tileSize, tiles);
             this.maze.createPillsLayer(this.tileSize, tiles);
-            this.maze.createSuperPillsLayer(this.tileSize, tiles);
             this.emit('mazeLoaded');
         }.bind(this));
     }.bind(this));
