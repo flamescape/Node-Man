@@ -33,8 +33,8 @@ var loadImages = function(callback) {
 
 var stage = new Kinetic.Stage({
     container: 'maze',
-    width: 560,
-    height: 620
+    width: 672,
+    height: 744 
 });
 
 var mazeLayer = new Kinetic.Layer();
