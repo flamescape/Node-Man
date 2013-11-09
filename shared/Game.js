@@ -65,7 +65,9 @@ Game.prototype.stop = function() {
 };
 
 Game.prototype.draw = function() {
+    //↓↓↓ THIS IS WRONG, IT SHOULD NOT BE HERE, ARE YOU KIDDING??? WE DON'T NEED TO DRAW THIS EVERY TIME!!!
     this.maze.getWallLayer().batchDraw();
+    //TODO: FIX THIS ↑↑↑
     this.maze.getPillsLayer().batchDraw();
     this.maze.getSuperPillsLayer().batchDraw();
     
