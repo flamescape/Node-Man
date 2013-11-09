@@ -1,14 +1,19 @@
 var tSize = 24;
-var mazeWidth = 28;
 
 var m = new Maze();
 m.load(1, function(err){
     if (err) throw err;
     
+    var stage = new Kinetic.Stage({
+        container: 'maze',
+        width: m.width * tSize,
+        height: m.height * tSize
+    });
+    
     // loaded maze into m
     loadImages(function(tiles){
-        drawMaze(tiles);
-        stage.add(m.createWallKineticLayer(24, tiles));
+        stage.add(m.createWallKineticLayer(tSize, tiles));
+        stage.add(m.createPillsKineticLayer(tSize, tiles));
     });
 });
 
@@ -38,41 +43,5 @@ var loadImages = function(callback) {
         };
         tiles[src].src = sources[src];
     }
-};
-
-var stage = new Kinetic.Stage({
-    container: 'maze',
-    width: 672,
-    height: 744 
-});
-
-var pillsLayer = new Kinetic.Layer();
-
-var drawMaze = function(tiles) {
-
-    _.each(m.pills, function(pill, num) {
-        if (pill === 1) {
-            mazeLayer.add(new Kinetic.RegularPolygon({
-                x: (num % mazeWidth) * tSize + tSize * 0.5,
-                y: Math.floor(num / mazeWidth) * tSize + tSize * 0.5,
-                radius: 4,
-                sides: 6,
-                rotationDeg: Math.random() * (360 - 1) + 1,
-                fill: "#FFF"
-            }));
-        }
-        else if (pill === 2) {
-            mazeLayer.add(new Kinetic.RegularPolygon({
-                x: (num % mazeWidth) * tSize + tSize * 0.5,
-                y: Math.floor(num / mazeWidth) * tSize + tSize * 0.5,
-                radius: 12,
-                sides: 6,
-                fill: "#FFF"
-            }));
-        }
-
-    }); 
-
-    stage.add(pillsLayer);
 };
 

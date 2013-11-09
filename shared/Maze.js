@@ -109,7 +109,35 @@ Maze.prototype.createWallKineticLayer = function(tileSize, tiles) {
             fontSize: 10,
             fill: 'blue'
         }));
-    });
+    }.bind(this));
+
+    return layer;
+};
+
+Maze.prototype.createPillsKineticLayer = function(tileSize, tiles) {
+    var layer = new Kinetic.Layer();
+    
+    _.each(this.pills, function(pill, idx) {
+        if (pill === 1) {
+            layer.add(new Kinetic.RegularPolygon({
+                x: (idx % this.width) * tSize + tSize * 0.5,
+                y: Math.floor(idx / this.width) * tSize + tSize * 0.5,
+                radius: 4,
+                sides: 6,
+                rotationDeg: Math.random() * (360 - 1) + 1,
+                fill: "#FFF"
+            }));
+        } else if (pill === 2) {
+            layer.add(new Kinetic.RegularPolygon({
+                x: (idx % this.width) * tSize + tSize * 0.5,
+                y: Math.floor(idx / this.width) * tSize + tSize * 0.5,
+                radius: 12,
+                sides: 6,
+                fill: "#FFF"
+            }));
+        }
+
+    }.bind(this)); 
 
     return layer;
 };
