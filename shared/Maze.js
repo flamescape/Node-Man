@@ -50,9 +50,9 @@ Maze.prototype.parse = function(data) {
     });
     
     var tileAt = function(idx) {
-        // if tile is outside the map, consider it solid
+        // if tile is outside the map, consider it empty
         if (idx < 0 || idx >= this.collisions.length)
-            return 1;
+            return 0;
         
         return this.collisions[idx];
     }.bind(this);
