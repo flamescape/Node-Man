@@ -1,3 +1,7 @@
+body {
+    background: #0e0e0e;
+    margin: 0;
+}
 #maze { 
   width: 672px;
   height: 744px;
