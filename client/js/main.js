@@ -57,6 +57,16 @@ var drawMaze = function(tiles) {
                 y: Math.floor(num / mazeWidth) * tSize + tSize * 0.5,
                 radius: 4,
                 sides: 6,
+                rotationDeg: Math.random() * (360 - 1) + 1,
+                fill: "#FFF"
+            }));
+        }
+        else if (pill === 2) {
+            mazeLayer.add(new Kinetic.RegularPolygon({
+                x: (num % mazeWidth) * tSize + tSize * 0.5,
+                y: Math.floor(num / mazeWidth) * tSize + tSize * 0.5,
+                radius: 12,
+                sides: 6,
                 fill: "#FFF"
             }));
         }
