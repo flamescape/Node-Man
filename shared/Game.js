@@ -55,6 +55,10 @@ Game.prototype.start = function() {
     this.loopInterval = setInterval(function() {
         this.tick(); // movement & collisions
         if (!SERVER) {
+            this.maze.getSuperPillsLayer().getChildren().each(function(shape) {
+                var r = shape.getAttr('rotationDeg') + 2;
+                shape.setAttr('rotationDeg', r);
+            });
             this.draw(); // redraw pills and characters
         }
     }.bind(this), 1000/60);
