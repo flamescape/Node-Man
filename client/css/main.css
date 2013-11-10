@@ -1,22 +1,57 @@
 body {
+    font-family: 'Play', sans-serif;
+    color: #FFF;
     background: #0e0e18;
     margin: 0;
 }
 
 #maze { 
-  width: 672px;
-  height: 744px;
-  background: #0e0e0e;
-  float: left;
+    width: 672px;
+    height: 744px;
+    background: #0e0e0e;
+    float: left;
 }
 
 #info {
-  width: 600px;
-  float: left;
-  margin-left: 72px;
-  padding-top: 12px;
+    width: 600px;
+    float: left;
+    margin-left: 72px;
+    padding-top: 12px;
+}
+
+#controls {
+    background-color: #1c1c30;
+    border-radius: 12px;
+    height: 72px;
+    border: 3px solid #ffb31a;
+    margin-top: 24px;
+}
+
+#controls dl {
+    text-align: center;
+}
+
+#controls dl dt, #controls dl dd {
+    display: inline;
+    font-weight:700;
+}
+
+#controls dl dt {
+    font-size: 2em;
+}
+
+#controls dl dd kbd {
+    border-radius: 6px;
+    font-size: 2.5em;
+    background-color: #EEE;
+    color: #222;
+    padding: 5px 10px 5px 10px;
 }
 
 .logo {
-  width: 100%;
+    width: 100%;
+}
+
+.hidden {
+    display: none;
 }
