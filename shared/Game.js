@@ -256,7 +256,9 @@ Game.prototype.spawnPlayer = function(sock) {
     sock.emit('control', c.id);
     
     sock.on('nd', function(nd){
-        c.nextDirection = nd;
+        if (!c.dead) {
+            c.nextDirection = nd;
+        }
         this.once('tick', this.reSyncCharacters.bind(this));
     }.bind(this));
 
