@@ -91,21 +91,23 @@ Game.prototype.resetPositions = function(delay) {
 
 Game.prototype.dropCharacter = function(id) {
     var c = this.getCharacterById(id);
-    if (SERVER) {
-        this.io.sockets.in(this.room).emit('drop', c.id);
-        
-        // free-up player slot for someone else
-        this.playerSlots.some(function(ps){
-            if (ps.occupied === id) {
-                ps.occupied = 0;
-                return true;
-            }
+    if (c) {
+        if (SERVER) {
+            this.io.sockets.in(this.room).emit('drop', c.id);
+            
+            // free-up player slot for someone else
+            this.playerSlots.some(function(ps){
+                if (ps.occupied === id) {
+                    ps.occupied = 0;
+                    return true;
+                }
+            });
+        }
+        c.destroy();
+        this.characters = this.characters.filter(function(c){
+            return c.id !== id;
         });
     }
-    c.destroy();
-    this.characters = this.characters.filter(function(c){
-        return c.id !== id;
-    });
     
     if (this.isPlayerSlotAvailable() && this.spectators.length) {
         this.join(this.spectators.shift());
@@ -143,6 +145,7 @@ Game.prototype.addCharacter = function(character) {
                 
                 if (!this.lives) {
                     this.dropCharacter(character.id);
+                    this.spectators.push(character.sock);
                     character.sock.emit('spectator', true);
                 } else {
                     this.io.sockets.in(this.room).emit('lives', this.lives);
