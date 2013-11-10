@@ -17,10 +17,10 @@ var Game = function(io, room) {
 
     this.playerSlots = [
         {type:'CharacterNodeman'},
-        {type:'CharacterGhost', variant:1},
-        {type:'CharacterGhost', variant:2},
-        {type:'CharacterGhost', variant:3},
-        {type:'CharacterGhost', variant:4}
+        {type:'CharacterGhost', variant:'perl'},
+        {type:'CharacterGhost', variant:'php'},
+        {type:'CharacterGhost', variant:'ruby'},
+        {type:'CharacterGhost', variant:'python'}
     ];
     
     this.characters = [];
@@ -261,6 +261,8 @@ Game.prototype.spawnPlayer = function(sock) {
         }
         this.once('tick', this.reSyncCharacters.bind(this));
     }.bind(this));
+    
+    c.on('needResync', this.reSyncCharacters.bind(this));
 
     sock.on('disconnect', function(){
         this.log(c.id, 'disconnected');

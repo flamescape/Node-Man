@@ -137,7 +137,7 @@ Character.prototype.destroy = function() {
 Character.prototype.die = function() {
     this.dead = true;
     this.speed = 0;
-    this.emit('died');
+    this.emit('needResync');
     
     setTimeout(function(){
         this.x = this.spawnPos.x;
@@ -146,7 +146,7 @@ Character.prototype.die = function() {
         this.speed = this.defaultSpeed
         this.dead = false;
         
-        this.emit('respawned');
+        this.emit('needResync');
     }.bind(this), 5000);
 };
 
