@@ -162,13 +162,14 @@ Game.prototype.startLoop = function() {
 Game.prototype.reSyncCharacters = function(chars) {
     if (SERVER) {
         this.io.sockets.in(this.room).emit('characters', _.map(this.characters, function(chr){
-            return _.pick(chr, ['id','type','x','y','direction','speed','nextDirection','scared']);
+            return _.pick(chr, ['id','type','x','y','direction','speed','nextDirection','scared','variant']);
         }));
     } else {
         _.each(chars, function(chr){
             if (!this.getCharacterById(chr.id)) {
                 var c = this.addCharacter(Character.createFromType(chr.type, this.maze));
                 c.id = chr.id;
+                c.loadImages();
             }
             
             _.extend(this.getCharacterById(chr.id), chr);
