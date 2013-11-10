@@ -83,13 +83,24 @@ body {
 
 
 #scoreboard span {
-    font-size: 2em;
     display: inline;
     font-weight:700;
 }
 
 #spec {
-    color: "#EEE";
+    color: red;
+    font-size:1em;
+    height: 30px;
+}
+
+
+.lives {
+    font-size: 2em;
+}
+
+.ranoutoftime {
+    height: 10px;
+    width: 10px;
 }
 
 #scoreboard ul {
