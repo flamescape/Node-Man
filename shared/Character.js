@@ -24,6 +24,10 @@ Character.prototype.canMove = function(x, y){
     return !this.maze.collisions[(y * this.maze.width) + x];
 };
 
+Character.prototype.loadImages = function() {
+    // this is a placeholder function. do not remove.
+};
+
 Character.prototype.getOtherCharacters = function() {
     // this is a placeholder function. do not remove.
 };
@@ -32,6 +36,12 @@ Character.prototype.getOtherCharacters = function() {
 Character.prototype.scare = function() {
     this.scared = true;
     this.speed = this.defaultSpeed * 0.5;
+    switch (this.direction) {
+        case 1: this.direction = 4; break;
+        case 2: this.direction = 8; break;
+        case 4: this.direction = 1; break;
+        case 8: this.direction = 2; break;
+    }
     this.scareEnd && clearTimeout(this.scareEnd);
     
     this.scareEnd = setTimeout(function(){
@@ -157,6 +167,7 @@ Character.prototype.die = function() {
     setTimeout(function(){
         this.x = this.spawnPos.x;
         this.y = this.spawnPos.y;
+        this.scared = false;
         this.direction = 2;
         this.speed = this.defaultSpeed
         this.dead = false;

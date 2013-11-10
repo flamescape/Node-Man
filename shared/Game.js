@@ -162,7 +162,7 @@ Game.prototype.startLoop = function() {
 Game.prototype.reSyncCharacters = function(chars) {
     if (SERVER) {
         this.io.sockets.in(this.room).emit('characters', _.map(this.characters, function(chr){
-            return _.pick(chr, ['id','type','x','y','direction','speed','nextDirection','scared']);
+            return _.pick(chr, ['id','type','x','y','direction','speed','nextDirection','scared','variant']);
         }));
     } else {
         _.each(chars, function(chr){
@@ -171,7 +171,9 @@ Game.prototype.reSyncCharacters = function(chars) {
                 c.id = chr.id;
             }
             
-            _.extend(this.getCharacterById(chr.id), chr);
+            var c = this.getCharacterById(chr.id)
+            _.extend(c, chr);
+            c.loadImages();
         }.bind(this));
     }
 };
