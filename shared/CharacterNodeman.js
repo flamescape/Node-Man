@@ -17,7 +17,13 @@ CharacterNodeman.prototype.spawnPos = {x:13.5, y:23};
 // called by server only
 CharacterNodeman.prototype.consumePill = function(junction, x, y){
     var offset = (y * this.maze.width) + x;
-    this.maze.consumePill(offset, this.id);
+    var consumedType = this.maze.consumePill(offset, this.id);
+    if (consumedType === 2) {
+        this.getOtherCharacters().forEach(function(c){
+            c.scare();
+        });
+        this.emit('needResync');
+    }
 };
 
 // called by server only
@@ -50,7 +56,7 @@ CharacterNodeman.prototype.contactCharacters = function() {
     
     close.forEach(function(c){
         console.log('NODEMAN is close to:', c.id, c.type, c.x, c.y);
-        if (this.poweredUp) {
+        if (c.scared) {
             c.die();
         } else {
             this.die();

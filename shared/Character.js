@@ -10,7 +10,9 @@ var Character = function(maze) {
     this.speed = this.defaultSpeed;
     this.nextDirection = 0;
     this.type = 'Character';
+    
     this.dead = false;
+    this.scared = false;
 };
 Character.prototype.__proto__ = EventEmitter2.prototype;
 
@@ -22,8 +24,31 @@ Character.prototype.canMove = function(x, y){
     return !this.maze.collisions[(y * this.maze.width) + x];
 };
 
+Character.prototype.loadImages = function() {
+    // this is a placeholder function. do not remove.
+};
+
 Character.prototype.getOtherCharacters = function() {
     // this is a placeholder function. do not remove.
+};
+
+// called on the server by CharacterNodeman. resync happens immediately after this
+Character.prototype.scare = function() {
+    this.scared = true;
+    this.speed = this.defaultSpeed * 0.5;
+    switch (this.direction) {
+        case 1: this.direction = 4; break;
+        case 2: this.direction = 8; break;
+        case 4: this.direction = 1; break;
+        case 8: this.direction = 2; break;
+    }
+    this.scareEnd && clearTimeout(this.scareEnd);
+    
+    this.scareEnd = setTimeout(function(){
+        this.speed = this.defaultSpeed;
+        this.scared = false;
+        this.emit('needResync');
+    }.bind(this), 10000);
 };
 
 Character.prototype.tick = function(delta) {
@@ -142,12 +167,13 @@ Character.prototype.die = function() {
     setTimeout(function(){
         this.x = this.spawnPos.x;
         this.y = this.spawnPos.y;
+        this.scared = false;
         this.direction = 2;
         this.speed = this.defaultSpeed
         this.dead = false;
         
         this.emit('needResync');
-    }.bind(this), 5000);
+    }.bind(this), 800);
 };
 
 Character.types = {'Character':Character};
