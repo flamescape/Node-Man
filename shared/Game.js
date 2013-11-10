@@ -13,7 +13,7 @@ if (SERVER) {
 var Game = function(io, room) {
     this.io = io; // socket io
     this.room = room; // socket io room
-    this.maze = new Maze();
+    this.maze = new Maze(this.tileSize);
 
     this.playerSlots = [
         {type:'CharacterNodeman'},
@@ -45,12 +45,45 @@ var Game = function(io, room) {
         sock.on('drop', function(id) {
             this.dropCharacter(id);
         }.bind(this));
+        
+        sock.on('newpills', function(pills){
+            setTimeout(this.maze.resetPills.bind(this.maze, pills), 1000);
+        }.bind(this));
     }
 };
 Game.prototype.__proto__ = EventEmitter2.prototype;
 
 Game.prototype.tileSize = 24;
 Game.prototype.fps = 60;
+
+Game.prototype.resetPositions = function(delay) {
+    this.characters.forEach(function(c){
+        c.speed = 0;
+    });
+    this.reSyncCharacters();
+    
+    setTimeout(function(){
+        
+        this.characters.forEach(function(c){
+            c.x = c.spawnPos.x;
+            c.y = c.spawnPos.y;
+            c.direction = 2;
+            c.speed = 0;
+            c.nextDirection = 0;
+            c.dead = false;
+            c.scared = false;
+        });
+        this.reSyncCharacters();
+        
+        setTimeout(function(){
+            this.characters.forEach(function(c){
+                c.speed = c.defaultSpeed;
+            }.bind(this));
+            this.reSyncCharacters();
+        }.bind(this), 2000);
+        
+    }.bind(this), delay || 1);
+};
 
 Game.prototype.dropCharacter = function(id) {
     var c = this.getCharacterById(id);
@@ -94,6 +127,10 @@ Game.prototype.addCharacter = function(character) {
                     return c.type !== character.type;
                 });
             }.bind(this);
+            
+            character.on('died', function(){
+                this.resetPositions(1000);
+            }.bind(this));
         }
     } else {
         this.characterLayer.add(character.getKineticShape());
@@ -153,6 +190,15 @@ Game.prototype.startLoop = function() {
         this.syncInterval = setInterval(function() {
             this.reSyncCharacters(); // movement & collisions
         }.bind(this), 2500);
+        
+        this.maze.on('pillConsumed', function(){
+            if (!this.maze.pills.some(function(p){return !!p;})) {
+                this.log('we\'re done');
+                this.resetPositions(1000);
+                this.maze.resetPills();
+                this.io.sockets.in(this.room).emit('newpills', this.maze.pills);
+            }
+        }.bind(this));
     }
 
     this.emit('started');
@@ -180,6 +226,9 @@ Game.prototype.reSyncCharacters = function(chars) {
 
 Game.prototype.stop = function() {
     clearInterval(this.loopInterval);
+    if (SERVER) {
+        clearInterval(this.syncInterval);
+    }
 };
 
 Game.prototype.draw = function() {
