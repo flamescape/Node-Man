@@ -14,6 +14,7 @@ var Game = function(io, room) {
     this.io = io; // socket io
     this.room = room; // socket io room
     this.maze = new Maze(this.tileSize);
+    this.lives = 3;
 
     this.playerSlots = [
         {type:'CharacterNodeman'},
@@ -129,6 +130,9 @@ Game.prototype.addCharacter = function(character) {
             }.bind(this);
             
             character.on('died', function(){
+                --this.lives;
+                this.io.sockets.in(this.room).emit('lives', this.lives);
+                
                 this.resetPositions(1000);
             }.bind(this));
         }
@@ -330,6 +334,7 @@ Game.prototype.join = function(sock) {
     sock.join(this.room);
     // tell the client some information about the game
     sock.emit('game', _.pick(this, ['room','maze']));
+    sock.emit('lives', this.lives);
 
     // add new character to game if available
     if (this.isPlayerSlotAvailable()) {
