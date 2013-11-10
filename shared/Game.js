@@ -56,6 +56,14 @@ Game.prototype.dropCharacter = function(id) {
     var c = this.getCharacterById(id);
     if (SERVER) {
         this.io.sockets.in(this.room).emit('drop', c.id);
+        
+        // free-up player slot for someone else
+        this.playerSlots.some(function(ps){
+            if (ps.occupied === id) {
+                ps.occupied = 0;
+                return true;
+            }
+        });
     }
     c.destroy();
     this.characters = this.characters.filter(function(c){
@@ -212,6 +220,43 @@ Game.create = function(io, room, startingLevel) {
     return g;
 };
 
+Game.prototype.isPlayerSlotAvailable = function() {
+    return !!this.playerSlots.some(function(ps){
+        return !ps.occupied;
+    });
+};
+
+Game.prototype.spawnPlayer = function(sock) {
+    var slot = _.find(this.playerSlots, function(ps){
+        return !ps.occupied;
+    });
+    
+    var c = Character.createFromType(slot.type, this.maze);
+    this.addCharacter(c);
+    //c.sock = sock;
+    c.x = c.spawnPos.x;
+    c.y = c.spawnPos.y;
+    c.variant = slot.variant;
+    slot.occupied = c.id;
+
+    // tell sock about characters in the game
+    // and broadcast new character to others
+    this.reSyncCharacters();
+    
+    // give character control to sock
+    sock.emit('control', c.id);
+    
+    sock.on('nd', function(nd){
+        c.nextDirection = nd;
+        this.once('tick', this.reSyncCharacters.bind(this));
+    }.bind(this));
+
+    sock.on('disconnect', function(){
+        this.log(c.id, 'disconnected');
+        this.dropCharacter(c.id);
+    }.bind(this));
+};
+
 // server calls this function when a player joins the game
 // (this is currently automatic on IO connect; see server.js)
 Game.prototype.join = function(sock) {
@@ -220,30 +265,8 @@ Game.prototype.join = function(sock) {
     sock.emit('game', _.pick(this, ['room','maze']));
 
     // add new character to game if available
-    if (this.playerSlots.length) {
-        var slotToFill = this.playerSlots.shift();
-        var c = Character.createFromType(slotToFill.type, this.maze);
-        this.addCharacter(c);
-        c.sock = sock;
-        c.x = c.spawnPos.x;
-        c.y = c.spawnPos.y;
-
-        // tell sock about characters in the game
-        // and broadcast new character to others
-        this.reSyncCharacters();
-        
-        // give character control to sock
-        sock.emit('control', c.id);
-        
-        sock.on('nd', function(nd){
-            c.nextDirection = nd;
-            this.once('tick', this.reSyncCharacters.bind(this));
-        }.bind(this));
-
-        sock.on('disconnect', function(){
-            this.log(c.id, 'disconnected');
-            this.dropCharacter(c.id);
-        }.bind(this));
+    if (this.isPlayerSlotAvailable()) {
+        this.spawnPlayer(sock);
     } else {
         // just show the spectator who is playing
         this.reSyncCharacters();
