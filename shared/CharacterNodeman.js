@@ -17,6 +17,28 @@ CharacterNodeman.prototype.consumePill = function(junction, x, y){
     }
 };
 
+CharacterNodeman.prototype.contactCharacters = function(others) {
+    var close = others.filter(function(c){
+        var minDist = 0.8;
+        var atOdds =
+               (c.direction === 1 && this.direction === 4)
+            || (c.direction === 4 && this.direction === 1)
+            || (c.direction === 2 && this.direction === 8)
+            || (c.direction === 8 && this.direction === 2)
+        ;
+        
+        if (atOdds) {
+            // if they're heading towards each other, safety distance is higher
+            minDist = 1.5;
+        }
+        return Math.abs(c.x - this.x) < minDist && Math.abs(c.y - this.y) < minDist;
+    }.bind(this));
+    
+    close.forEach(function(c){
+        console.log('NODEMAN is close to:', c.id, c.type, c.x, c.y);
+    });
+};
+
 CharacterNodeman.prototype.getKineticShape = function() {
     if (!this.img) {
         this.img = new Image();
