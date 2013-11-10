@@ -4,6 +4,7 @@ var CharacterGhost = function(maze){
     Character.apply(this, arguments);
     this.type = 'CharacterGhost';
     
+    this.defaultDirection = 4;
     this.direction = 4;
     
     this.on('died', function(){

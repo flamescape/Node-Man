@@ -68,7 +68,7 @@ Game.prototype.resetPositions = function(delay) {
         this.characters.forEach(function(c){
             c.x = c.spawnPos.x;
             c.y = c.spawnPos.y;
-            c.direction = 4;
+            c.direction = c.defaultDirection;
             c.speed = 0;
             c.nextDirection = 0;
             c.dead = false;

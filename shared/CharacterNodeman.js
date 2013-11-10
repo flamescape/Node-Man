@@ -4,6 +4,7 @@ var CharacterNodeman = function(maze){
     Character.apply(this, arguments);
     this.type = 'CharacterNodeman';
     this.spawnPos = {x:13.5, y:23};
+    this.defaultDirection = 2;
     
     if (SERVER) {
         this.on('atJunction', this.consumePill.bind(this));
