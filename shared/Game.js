@@ -17,9 +17,9 @@ var Game = function(io, room) {
 
     this.playerSlots = [
         {type:'CharacterNodeman'},
-        {type:'CharacterGhost', variant:'python', x: 10},
-        {type:'CharacterGhost', variant:'ruby', x: 12},
-        {type:'CharacterGhost', variant:'php', x: 15},
+        {type:'CharacterGhost', variant:'python', x: 12},
+        {type:'CharacterGhost', variant:'ruby', x: 15},
+        {type:'CharacterGhost', variant:'php', x: 10},
         {type:'CharacterGhost', variant:'perl', x: 17}
     ];
     
@@ -67,7 +67,7 @@ Game.prototype.resetPositions = function(delay) {
         this.characters.forEach(function(c){
             c.x = c.spawnPos.x;
             c.y = c.spawnPos.y;
-            c.direction = 2;
+            c.direction = 4;
             c.speed = 0;
             c.nextDirection = 0;
             c.dead = false;
@@ -294,10 +294,12 @@ Game.prototype.spawnPlayer = function(sock) {
     var c = Character.createFromType(slot.type, this.maze);
     this.addCharacter(c);
     //c.sock = sock;
+    if (slot.x) {
+        c.spawnPos.x = slot.x;
+    }
     c.x = c.spawnPos.x;
     c.y = c.spawnPos.y;
     c.variant = slot.variant;
-    if (slot.x) c.x = slot.x;
     slot.occupied = c.id;
 
     // tell sock about characters in the game
