@@ -3,6 +3,8 @@ var Character = Character || require('./Character');
 var CharacterNodeman = function(maze){
     Character.apply(this, arguments);
     this.type = 'CharacterNodeman';
+    this.spawnPos = {x:13.5, y:23};
+    this.defaultDirection = 2;
     
     if (SERVER) {
         this.on('atJunction', this.consumePill.bind(this));
@@ -11,8 +13,6 @@ var CharacterNodeman = function(maze){
 };
 
 CharacterNodeman.prototype.__proto__ = Character.prototype;
-
-CharacterNodeman.prototype.spawnPos = {x:13.5, y:23};
 
 // called by server only
 CharacterNodeman.prototype.consumePill = function(junction, x, y){

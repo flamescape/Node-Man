@@ -4,18 +4,20 @@ var CharacterGhost = function(maze){
     Character.apply(this, arguments);
     this.type = 'CharacterGhost';
     
+    this.defaultDirection = 4;
     this.direction = 4;
     
     this.on('died', function(){
         this.speed = 0;
         this.scared = false;
-        this.x = this.spawnPos.x;
+        this.x = 13.5;
         this.y = this.spawnPos.y+3;
         this.emit('needResync');
         
         setTimeout(function(){
+            this.x = this.spawnPos.x;
             this.y = this.spawnPos.y;
-            this.direction = 2;
+            this.direction = 4;
             this.speed = this.defaultSpeed;
             this.dead = false;
             

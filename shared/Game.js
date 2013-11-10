@@ -14,12 +14,13 @@ var Game = function(io, room) {
     this.io = io; // socket io
     this.room = room; // socket io room
     this.maze = new Maze(this.tileSize);
+    this.lives = 3;
 
     this.playerSlots = [
         {type:'CharacterNodeman'},
-        {type:'CharacterGhost', variant:'python', x: 10},
-        {type:'CharacterGhost', variant:'ruby', x: 12},
-        {type:'CharacterGhost', variant:'php', x: 15},
+        {type:'CharacterGhost', variant:'python', x: 12},
+        {type:'CharacterGhost', variant:'ruby', x: 15},
+        {type:'CharacterGhost', variant:'php', x: 10},
         {type:'CharacterGhost', variant:'perl', x: 17}
     ];
     
@@ -67,7 +68,7 @@ Game.prototype.resetPositions = function(delay) {
         this.characters.forEach(function(c){
             c.x = c.spawnPos.x;
             c.y = c.spawnPos.y;
-            c.direction = 2;
+            c.direction = c.defaultDirection;
             c.speed = 0;
             c.nextDirection = 0;
             c.dead = false;
@@ -129,6 +130,9 @@ Game.prototype.addCharacter = function(character) {
             }.bind(this);
             
             character.on('died', function(){
+                --this.lives;
+                this.io.sockets.in(this.room).emit('lives', this.lives);
+                
                 this.resetPositions(1000);
             }.bind(this));
         }
@@ -294,10 +298,12 @@ Game.prototype.spawnPlayer = function(sock) {
     var c = Character.createFromType(slot.type, this.maze);
     this.addCharacter(c);
     //c.sock = sock;
+    if (slot.x) {
+        c.spawnPos.x = slot.x;
+    }
     c.x = c.spawnPos.x;
     c.y = c.spawnPos.y;
     c.variant = slot.variant;
-    if (slot.x) c.x = slot.x;
     slot.occupied = c.id;
 
     // tell sock about characters in the game
@@ -328,6 +334,7 @@ Game.prototype.join = function(sock) {
     sock.join(this.room);
     // tell the client some information about the game
     sock.emit('game', _.pick(this, ['room','maze']));
+    sock.emit('lives', this.lives);
 
     // add new character to game if available
     if (this.isPlayerSlotAvailable()) {
