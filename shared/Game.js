@@ -17,10 +17,10 @@ var Game = function(io, room) {
 
     this.playerSlots = [
         {type:'CharacterNodeman'},
-        {type:'CharacterGhost', variant:'perl'},
-        {type:'CharacterGhost', variant:'php'},
+        {type:'CharacterGhost', variant:'python'},
         {type:'CharacterGhost', variant:'ruby'},
-        {type:'CharacterGhost', variant:'python'}
+        {type:'CharacterGhost', variant:'php'},
+        {type:'CharacterGhost', variant:'perl'}
     ];
     
     this.characters = [];
