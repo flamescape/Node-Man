@@ -158,12 +158,17 @@ Maze.prototype.getWallLayer = function() {
 };
 
 Maze.prototype.createPillsLayer = function(tileSize) {
+    this.pillShapes = {};
     var pillsLayer = this.getPillsLayer();
     var superPillsLayer = this.getSuperPillsLayer();
     
     _.each(this.pills, function(pill, idx) {
+        if (!pill) return;
+    
+        var pillShape;
+        
         if (pill === 1) {
-            pillsLayer.add(new Kinetic.RegularPolygon({
+            pillsLayer.add(pillShape = new Kinetic.RegularPolygon({
                 x: (idx % this.width) * tileSize + tileSize * 0.5,
                 y: Math.floor(idx / this.width) * tileSize + tileSize * 0.5,
                 radius: 4,
@@ -172,7 +177,7 @@ Maze.prototype.createPillsLayer = function(tileSize) {
                 fill: "#FFF"
             }));
         } else if (pill === 2) {
-            superPillsLayer.add(new Kinetic.RegularPolygon({
+            superPillsLayer.add(pillShape = new Kinetic.RegularPolygon({
                 x: (idx % this.width) * tileSize + tileSize * 0.5,
                 y: Math.floor(idx / this.width) * tileSize + tileSize * 0.5,
                 radius: 12,
@@ -185,6 +190,8 @@ Maze.prototype.createPillsLayer = function(tileSize) {
                 shadowOffsetY: 2
             }));
         }
+        
+        this.pillShapes[idx] = pillShape;
     }.bind(this));
 };
 
@@ -194,6 +201,15 @@ Maze.prototype.getPillsLayer = function() {
 
 Maze.prototype.getSuperPillsLayer = function() {
     return this.superPillsLayer || (this.superPillsLayer = new Kinetic.Layer());
+};
+
+// only called on the server by CharacterNodeman
+Maze.prototype.consumePill = function(idx, consumerId) {
+    if (!this.pills[idx]) return;
+    
+    var type = this.pills[idx];
+    this.pills[idx] = 0;
+    this.emit('pillConsumed', idx, type, consumerId);
 };
 
 (typeof module !== 'undefined') && (module.exports = Maze);

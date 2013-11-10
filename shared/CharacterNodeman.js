@@ -3,18 +3,16 @@ var Character = Character || require('./Character');
 var CharacterNodeman = function(maze){
     Character.apply(this, arguments);
     this.type = 'CharacterNodeman';
-    this.on('atJunction', this.consumeNode.bind(this));
+    this.on('atJunction', this.consumePill.bind(this));
 };
 
 CharacterNodeman.prototype.__proto__ = Character.prototype;
 
-CharacterNodeman.prototype.consumeNode = function(junction, x, y){
-    var offset = (y * this.maze.width) + x;
-    var pillType = this.maze.pills[offset];
-    if (pillType) {
-        console.log('waka');
+CharacterNodeman.prototype.consumePill = function(junction, x, y){
+    if (SERVER) {
+        var offset = (y * this.maze.width) + x;
+        this.maze.consumePill(offset, this.id);
     }
-    this.maze.pills[offset] = 0;
 };
 
 CharacterNodeman.prototype.getKineticShape = function() {
