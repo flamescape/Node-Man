@@ -1,6 +1,8 @@
 var EventEmitter2 = EventEmitter2 || require('eventemitter2').EventEmitter2
   , Maze = Maze || require('./Maze')
+  , Character = Character || require('./Character')
   , CharacterNodeman = CharacterNodeman || require('./CharacterNodeman')
+  , CharacterGhost = CharacterGhost || require('./CharacterGhost')
   ;
 
 if (SERVER) {
@@ -13,20 +15,35 @@ var Game = function(io, room) {
     this.room = room; // socket io room
     this.maze = new Maze();
 
-    this.characters = {};
+    this.playerSlots = [
+        {type:'CharacterNodeman'},
+        {type:'CharacterGhost', variant:1},
+        {type:'CharacterGhost', variant:2},
+        {type:'CharacterGhost', variant:3},
+        {type:'CharacterGhost', variant:4}
+    ];
     
-    if (SERVER) {
-        this.once('mazeLoaded', function(maze){
-            this.io.sockets.in(this.room).emit('startGame', maze);
-        }.bind(this));
-    } else {
+    this.characters = [];
+    
+    if (!SERVER) {
         sock.on('characters', function(chars){
             this.reSyncCharacters(chars);
         }.bind(this));
         
         sock.on('control', function(id) {
-            var lc = new LocalController(this.characters[id], sock);
-            this.characters[id].assignController(lc);
+            console.log('i\'ve been given control of', id);
+            var c = this.getCharacterById(id);
+            var lc = new LocalController(c, sock);
+            c.assignController(lc);
+        }.bind(this));
+        
+        sock.on('pc', function(idx) {
+            this.maze.pillShapes[idx] && this.maze.pillShapes[idx].destroy()
+            this.maze.getPillsLayer().batchDraw();
+        }.bind(this));
+        
+        sock.on('drop', function(id) {
+            this.dropCharacter(id);
         }.bind(this));
     }
 };
@@ -34,6 +51,29 @@ Game.prototype.__proto__ = EventEmitter2.prototype;
 
 Game.prototype.tileSize = 24;
 Game.prototype.fps = 60;
+
+Game.prototype.dropCharacter = function(id) {
+    var c = this.getCharacterById(id);
+    if (SERVER) {
+        this.io.sockets.in(this.room).emit('drop', c.id);
+        
+        // free-up player slot for someone else
+        this.playerSlots.some(function(ps){
+            if (ps.occupied === id) {
+                ps.occupied = 0;
+                return true;
+            }
+        });
+    }
+    c.destroy();
+    this.characters = this.characters.filter(function(c){
+        return c.id !== id;
+    });
+};
+
+Game.prototype.getCharacterById = function(id) {
+    return _.find(this.characters, function(c){return c.id===id;});
+};
 
 Game.prototype.calcDelta = function(){
     var delta = 0;
@@ -45,7 +85,7 @@ Game.prototype.calcDelta = function(){
 };
 
 Game.prototype.addCharacter = function(character) {
-    this.characters[character.id] = character;
+    this.characters.push(character);
     if (!SERVER) {
         this.characterLayer.add(character.getKineticShape());
     }
@@ -105,7 +145,7 @@ Game.prototype.startLoop = function() {
             this.reSyncCharacters(); // movement & collisions
         }.bind(this), 2500);
     }
-    
+
     this.emit('started');
 };
 
@@ -117,12 +157,12 @@ Game.prototype.reSyncCharacters = function(chars) {
         }));
     } else {
         _.each(chars, function(chr){
-            if (!this.characters[chr.id]) {
-                this.characters[chr.id] = this.addCharacter(Character.createFromType(chr.type, this.maze));
+            if (!this.getCharacterById(chr.id)) {
+                var c = this.addCharacter(Character.createFromType(chr.type, this.maze));
+                c.id = chr.id;
             }
             
-            var gChr = this.characters[chr.id];
-            _.extend(gChr, chr);
+            _.extend(this.getCharacterById(chr.id), chr);
         }.bind(this));
     }
 };
@@ -145,11 +185,11 @@ Game.prototype.tick = function() {
     var delta = this.calcDelta();
     if (!delta) // no time has passed since last update?
         return;
-        
+
     _.each(this.characters, function(c){
         c.tick(delta);
     }.bind(this));
-    
+
     this.emit('tick');
 };
 
@@ -180,26 +220,61 @@ Game.create = function(io, room, startingLevel) {
     return g;
 };
 
-Game.prototype.join = function(sock) {
-    sock.join(this.room);
-    // tell the client some information about the game
-    sock.emit('game', _.pick(this, ['room','maze']));
+Game.prototype.isPlayerSlotAvailable = function() {
+    return !!this.playerSlots.some(function(ps){
+        return !ps.occupied;
+    });
+};
 
-    // add new character to game
-    var c = this.addCharacter(new CharacterNodeman(this.maze));
-    c.sock = sock;
-    c.x = 13.5;
-    c.y = 23;
+Game.prototype.spawnPlayer = function(sock) {
+    var slot = _.find(this.playerSlots, function(ps){
+        return !ps.occupied;
+    });
     
+    var c = Character.createFromType(slot.type, this.maze);
+    this.addCharacter(c);
+    //c.sock = sock;
+    c.x = c.spawnPos.x;
+    c.y = c.spawnPos.y;
+    c.variant = slot.variant;
+    slot.occupied = c.id;
+
     // tell sock about characters in the game
     // and broadcast new character to others
     this.reSyncCharacters();
     
     // give character control to sock
-    c.sock.emit('control', c.id);
-    c.sock.on('nd', function(nd){
+    sock.emit('control', c.id);
+    
+    sock.on('nd', function(nd){
         c.nextDirection = nd;
         this.once('tick', this.reSyncCharacters.bind(this));
+    }.bind(this));
+
+    sock.on('disconnect', function(){
+        this.log(c.id, 'disconnected');
+        this.dropCharacter(c.id);
+    }.bind(this));
+};
+
+// server calls this function when a player joins the game
+// (this is currently automatic on IO connect; see server.js)
+Game.prototype.join = function(sock) {
+    sock.join(this.room);
+    // tell the client some information about the game
+    sock.emit('game', _.pick(this, ['room','maze']));
+
+    // add new character to game if available
+    if (this.isPlayerSlotAvailable()) {
+        this.spawnPlayer(sock);
+    } else {
+        // just show the spectator who is playing
+        this.reSyncCharacters();
+    }
+    
+    // notifications to all observing sockets (even spectators)
+    this.maze.on('pillConsumed', function(idx, type, consumerId){
+        sock.emit('pc', idx, type, consumerId);
     }.bind(this));
 };
 

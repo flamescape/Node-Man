@@ -1,9 +1,78 @@
 body {
+    font-family: 'Play', sans-serif;
+    color: #FFF;
     background: #0e0e18;
     margin: 0;
 }
+
 #maze { 
-  width: 672px;
-  height: 744px;
-  background: #0e0e0e;
+    width: 672px;
+    height: 744px;
+    background: #0e0e0e;
+    float: left;
+}
+
+#info {
+    width: 600px;
+    float: left;
+    margin-left: 72px;
+    padding-top: 12px;
+}
+
+#controls {
+    background-color: #1c1c30;
+    border-radius: 12px;
+    height: 72px;
+    border: 3px solid #ffb31a;
+    margin-top: 24px;
+    -moz-box-shadow:    3px 3px 0px 0px #f79421;
+    box-shadow:         3px 3px 0px 0px #f79421;
+}
+
+#controls dl {
+    text-align: center;
+}
+
+#controls dl dt, #controls dl dd {
+    display: inline;
+    font-weight:700;
+}
+
+#controls dl dt {
+    font-size: 2em;
+}
+
+#controls dl dd kbd {
+    border-radius: 6px;
+    border: 2px solid #444;
+    font-size: 2.5em;
+    background-color: #fff4df;
+    color: #222;
+    padding: 5px 10px 5px 10px;
+    -moz-box-shadow:    3px 3px 0px 0px #a69e90;
+    box-shadow:         3px 3px 0px 0px #a69e90;
+}
+
+#play {
+    font-weight:700;
+    border-radius: 6px;
+    margin-top: 24px;
+    height: 72px;
+    background-color: #f79421;
+    width: 100%;
+    color: #0e0e0e;
+    border: 3px solid #b26b18;
+    font-family: "Play", sans-serif;
+    font-size: 3em;
+    box-shadow: 2px 2px 0px 0px #ae6817, 4px 4px 0px 0px #ae6817;
+    -moz-box-shadow: 2px 2px 0px 0px #ae6817, 4px 4px 0px 0px #ae6817;
+    text-shadow: 1px 1px 1px #000;
+}
+
+.logo {
+    width: 100%;
+}
+
+.hidden {
+    display: none;
 }
