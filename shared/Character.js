@@ -64,7 +64,7 @@ Character.prototype.tick = function(delta) {
     this.y += my;
     
     if (this.atJunction) {
-        this.emit('atJunction', this.atJunction);
+        this.emit('atJunction', this.atJunction, Math.round(this.x), Math.round(this.y));
         this.atJunction = 0;
     }
 };
@@ -74,21 +74,27 @@ Character.prototype.assignController = function(controller) {
 };
 
 Character.prototype.draw = function(tileSize) {
+    var deg = 0;
+    if (this.direction === 1) deg = -90;
+    if (this.direction === 4) deg = 90;
+    
     this.getKineticShape().setAttrs({
-        x: this.x * tileSize,
-        y: this.y * tileSize
+        x: this.x * tileSize + 12,
+        y: this.y * tileSize + 12,
+        rotationDeg: deg,
+        scaleX: this.direction === 8 ? -1 : 1
     });
 };
 
-Character.prototype.getKineticShape = function() {
+Character.prototype.getKineticShape = function(tile) {
     return this.kineticShape || (this.kineticShape = new Kinetic.Rect({
-        width: 40,
+        width: 35,
         height: 40,
         x: 0,
         y: 0,
-        offsetX: 8,
-        offsetY: 8,
-        fill: 'white'
+        offsetX: 20,
+        offsetY: 20,
+        fillPatternImage: tile
     }));
 };
 

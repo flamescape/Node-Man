@@ -26,14 +26,14 @@ Game.prototype.calcDelta = function(){
         delta = Date.now() - this._prevTick;
     }
     this._prevTick = Date.now();
-    return delta && delta / (1000/this.fps);
+    return Math.min(delta / (1000/this.fps), 3); // maximum 3 frames skipped
 };
 
 Game.prototype.__proto__ = EventEmitter2.prototype;
 
-Game.prototype.addCharacter = function(character) {
+Game.prototype.addCharacter = function(character, tile) {
     this.characters.push(character);
-    this.characterLayer.add(character.getKineticShape());
+    this.characterLayer.add(character.getKineticShape(tile));
     return character;
 };
 
