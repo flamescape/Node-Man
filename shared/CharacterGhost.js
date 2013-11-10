@@ -8,6 +8,7 @@ var CharacterGhost = function(maze){
 CharacterGhost.prototype.__proto__ = Character.prototype;
 
 CharacterGhost.prototype.spawnPos = {x:13.5, y:11};
+CharacterGhost.prototype.defaultSpeed = 0.1;
 
 CharacterGhost.prototype.loadImages = function() {
     if (!this.img) {
