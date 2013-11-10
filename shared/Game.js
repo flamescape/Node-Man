@@ -144,8 +144,8 @@ Game.prototype.addCharacter = function(character) {
                 --this.lives;
                 
                 if (!this.lives) {
-                    this.dropCharacter(character.id);
                     this.spectators.push(character.sock);
+                    this.dropCharacter(character.id);
                     character.sock.emit('spectator', true);
                 } else {
                     this.io.sockets.in(this.room).emit('lives', this.lives);
