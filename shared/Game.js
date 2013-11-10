@@ -169,10 +169,11 @@ Game.prototype.reSyncCharacters = function(chars) {
             if (!this.getCharacterById(chr.id)) {
                 var c = this.addCharacter(Character.createFromType(chr.type, this.maze));
                 c.id = chr.id;
-                c.loadImages();
             }
             
-            _.extend(this.getCharacterById(chr.id), chr);
+            var c = this.getCharacterById(chr.id)
+            _.extend(c, chr);
+            c.loadImages();
         }.bind(this));
     }
 };

@@ -3,8 +3,6 @@ var Character = Character || require('./Character');
 var CharacterGhost = function(maze){
     Character.apply(this, arguments);
     this.type = 'CharacterGhost';
-    this.variant = 'ruby';
-    this.img = {};
 };
 
 CharacterGhost.prototype.__proto__ = Character.prototype;
@@ -12,10 +10,12 @@ CharacterGhost.prototype.__proto__ = Character.prototype;
 CharacterGhost.prototype.spawnPos = {x:13.5, y:11};
 
 CharacterGhost.prototype.loadImages = function() {
-    this.img = new Image();
-    this.img.src = 'img/'+this.variant+'.png';
-    this.imgScared = new Image();
-    this.imgScared.src = 'img/'+this.variant+'-scared.png';
+    if (!this.img) {
+        this.img = new Image();
+        this.img.src = 'img/'+this.variant+'.png';
+        this.imgScared = new Image();
+        this.imgScared.src = 'img/'+this.variant+'-scared.png';
+    }
 };
 
 CharacterGhost.prototype.getKineticShape = function() {
