@@ -82,7 +82,7 @@ Character.prototype.draw = function(tileSize) {
         x: this.x * tileSize,
         y: this.y * tileSize,
         rotationDeg: deg,
-        scale: this.direction === 8 ? -1 : 1
+        scaleX: this.direction === 8 ? -1 : 1
     });
 };
 
