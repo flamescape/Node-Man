@@ -15,6 +15,7 @@ var Game = function(io, room) {
     this.room = room; // socket io room
     this.maze = new Maze(this.tileSize);
     this.lives = 3;
+    this.spectators = [];
 
     this.playerSlots = [
         {type:'CharacterNodeman'},
@@ -105,6 +106,10 @@ Game.prototype.dropCharacter = function(id) {
     this.characters = this.characters.filter(function(c){
         return c.id !== id;
     });
+    
+    if (this.isPlayerSlotAvailable() && this.spectators.length) {
+        this.join(this.spectators.shift());
+    }
 };
 
 Game.prototype.getCharacterById = function(id) {
@@ -135,7 +140,13 @@ Game.prototype.addCharacter = function(character) {
             
             character.on('died', function(){
                 --this.lives;
-                this.io.sockets.in(this.room).emit('lives', this.lives);
+                
+                if (!this.lives) {
+                    this.dropCharacter(character.id);
+                    character.sock.emit('spectator', true);
+                } else {
+                    this.io.sockets.in(this.room).emit('lives', this.lives);
+                }
                 
                 this.resetPositions(1000);
             }.bind(this));
@@ -331,7 +342,7 @@ Game.prototype.spawnPlayer = function(sock) {
     
     var c = Character.createFromType(slot.type, this.maze);
     this.addCharacter(c);
-    //c.sock = sock;
+    c.sock = sock;
     if (slot.x) {
         c.spawnPos.x = slot.x;
     }
@@ -359,6 +370,9 @@ Game.prototype.spawnPlayer = function(sock) {
     sock.on('disconnect', function(){
         this.log(c.id, 'disconnected');
         this.dropCharacter(c.id);
+        this.spectators = this.spectators.filter(function(s){
+            return sock !== s;
+        });
     }.bind(this));
     
     if (this.characters.length === 1) {
@@ -379,6 +393,8 @@ Game.prototype.join = function(sock) {
         this.spawnPlayer(sock);
     } else {
         // just show the spectator who is playing
+        sock.emit('spectator', true);
+        this.spectators.push(sock);
         this.reSyncCharacters();
     }
     
