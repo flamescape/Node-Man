@@ -1,22 +1,20 @@
-var EventEmitter2 = EventEmitter2 || require('eventemitter2');
+var EventEmitter2 = EventEmitter2 || require('eventemitter2').EventEmitter2
+  , Maze = Maze || require('./Maze')
+  ;
 
-var Game = function() {
+var Game = function(io, room) {
+    this.io = io; // socket io
+    this.room = room; // socket io room
+
     this.characters = [];
-    this.characterLayer = new Kinetic.Layer();
-    
-    this.on('mazeLoaded', function(){
-        this.stage = new Kinetic.Stage({
-            container: 'maze',
-            width: this.maze.width * this.tileSize,
-            height: this.maze.height * this.tileSize
-        });
-    
-        this.stage.add(this.maze.getWallLayer());
-        this.stage.add(this.maze.getPillsLayer());
-        this.stage.add(this.maze.getSuperPillsLayer());
-        this.stage.add(this.characterLayer);
-    }.bind(this));
+    if (SERVER) {
+        this.once('mazeLoaded', function(maze){
+            this.io.sockets.in(this.room).emit('startGame', maze);
+        }.bind(this));
+    }
 };
+Game.prototype.__proto__ = EventEmitter2.prototype;
+
 Game.prototype.tileSize = 24;
 Game.prototype.fps = 60;
 
@@ -29,36 +27,52 @@ Game.prototype.calcDelta = function(){
     return Math.min(delta / (1000/this.fps), 3); // maximum 3 frames skipped
 };
 
-Game.prototype.__proto__ = EventEmitter2.prototype;
-
 Game.prototype.addCharacter = function(character, tile) {
     this.characters.push(character);
     this.characterLayer.add(character.getKineticShape(tile));
     return character;
 };
 
-Game.prototype.loadLevel = function(level) {
-    this.maze = new Maze();
-    this.maze.load(1, function(err){
-        if (err) throw err;
+// call this method on the client when the level data is parsed and ready
+Game.prototype.buildKineticStage = function(){
+    this.characterLayer = new Kinetic.Layer();
+
+    this.stage = new Kinetic.Stage({
+        container: 'maze',
+        width: this.maze.width * this.tileSize,
+        height: this.maze.height * this.tileSize
+    });
+    this.stage.add(this.maze.getWallLayer());
+    this.stage.add(this.maze.getPillsLayer());
+    this.stage.add(this.maze.getSuperPillsLayer());
+    this.stage.add(this.characterLayer);
+    
+    // load maze images and create Kinetic layers
+    loadImages(function(tiles){
+        this.maze.createWallLayer(this.tileSize, tiles);
+        this.maze.createPillsLayer(this.tileSize, tiles);
         
-        var stage = new Kinetic.Stage({
-            container: 'maze',
-            width: this.maze.width * this.tileSize,
-            height: this.maze.height * this.tileSize
-        });
-        stage.add(this.maze.getWallLayer());
-        stage.add(this.maze.getPillsLayer());
-        stage.add(this.maze.getSuperPillsLayer());
+        this.maze.getWallLayer().batchDraw();
+        this.maze.getPillsLayer().batchDraw();
         
-        // loaded maze into m
-        loadImages(function(tiles){
-            this.maze.createWallLayer(this.tileSize, tiles);
-            this.maze.createPillsLayer(this.tileSize, tiles);
-            this.maze.getWallLayer().batchDraw();
-            this.emit('mazeLoaded');
-        }.bind(this));
+        this.emit('kineticStageReady');
     }.bind(this));
+};
+
+Game.prototype.loadLevel = function(level, cb) {
+    this.maze = new Maze();
+    
+    if (!SERVER) {
+        this.maze.once('loaded', this.buildKineticStage.bind(this));
+    }
+    
+    if (cb) {
+        this.maze.once('loaded', cb.bind(this, this.maze));
+    }
+    
+    this.maze.once('loaded', this.emit.bind(this, 'mazeLoaded', this.maze));
+    
+    this.maze.load(1);
 };
 
 Game.prototype.start = function() {
@@ -105,3 +119,5 @@ Game.prototype.animateSuperPills = function(rotSpeed, pulseSpeed) {
         shape.setAttr('radius', 12 + 2 * c);
     });
 };
+
+(typeof module !== 'undefined') && (module.exports = Game);

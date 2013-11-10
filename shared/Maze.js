@@ -1,3 +1,5 @@
+var EventEmitter2 = EventEmitter2 || require('eventemitter2').EventEmitter2;
+
 if (SERVER) {
     var _ = require('underscore');
 }
@@ -5,13 +7,16 @@ if (SERVER) {
 var Maze = function(){
 
 };
+Maze.prototype.__proto__ = EventEmitter2.prototype;
 
 Maze.prototype.load = function(levelNum, cb) {
+    this.levelNum = levelNum;
+
     var fn = 'levels/'+levelNum+'.txt';
     
     if (SERVER) {
-        require('fs').readFile(path.join(__dirname, fn), function(err, data){
-            this.parse(data);
+        require('fs').readFile(fn, function(err, data){
+            this.parse(data.toString());
             return cb&&cb(err);
         }.bind(this));
     } else {
@@ -92,6 +97,7 @@ Maze.prototype.parse = function(data) {
         return decor;
     }.bind(this));
 
+    this.emit('loaded');
 };
 
 Maze.prototype.createWallLayer = function(tileSize, tiles) {
@@ -163,5 +169,7 @@ Maze.prototype.getPillsLayer = function() {
 };
 
 Maze.prototype.getSuperPillsLayer = function() {
-    return this.SuperPillsLayer || (this.SuperPillsLayer = new Kinetic.Layer());
+    return this.superPillsLayer || (this.superPillsLayer = new Kinetic.Layer());
 };
+
+(typeof module !== 'undefined') && (module.exports = Maze);

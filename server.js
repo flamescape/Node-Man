@@ -11,7 +11,7 @@ var path = require('path')
   , app = express()
   , server = require('http').createServer(app)
   , io = require('socket.io').listen(server, {log:false})
-  , GameRoom = require('./shared/GameRoom')
+  , Game = require('./shared/Game')
   ;
 
 server.listen(port, function(err) {
@@ -31,7 +31,21 @@ app.use('/js/shared', express.static(path.join(__dirname, 'shared')));
 app.use('/js/lib/shared', express.static(path.join(__dirname, 'node_modules')));
 app.use('/levels', express.static(path.join(__dirname, 'levels')));
 
+
+var g = new Game(io, 'game.1');
+g.loadLevel(1);
+g.once('mazeLoaded', function(){
+/*
+    var c = g.addCharacter(new CharacterNodeman(g.maze), tiles.nodeman);
+    c.x = 13.5;
+    c.y = 23;
+    c.assignController(new LocalController(c));
+*/
+    g.start(); // start simulation
+});
+
 io.sockets.on('connection', function(sock) {
     console.log('New client connected.'.cyan);
-    sock.join('waiting');
+    sock.emit('startGame');
+    
 });
