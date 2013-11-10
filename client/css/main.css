@@ -111,6 +111,10 @@ body {
 }
 
 iframe {
+    overflow: hidden;
+    width: 115px;
+    height: 25px;
+    border: none;
     background-color: white;
     margin-left: 150px;
     background-color: white;
