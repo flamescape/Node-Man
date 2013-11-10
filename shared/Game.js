@@ -27,6 +27,11 @@ var Game = function(io, room) {
             c.assignController(lc);
         }.bind(this));
         
+        sock.on('pc', function(idx) {
+            this.maze.pillShapes[idx] && this.maze.pillShapes[idx].destroy()
+            this.maze.getPillsLayer().batchDraw();
+        }.bind(this));
+        
         sock.on('drop', function(id) {
             this.dropCharacter(id);
         }.bind(this));
@@ -218,6 +223,10 @@ Game.prototype.join = function(sock) {
     c.sock.on('nd', function(nd){
         c.nextDirection = nd;
         this.once('tick', this.reSyncCharacters.bind(this));
+    }.bind(this));
+    
+    this.maze.on('pillConsumed', function(idx, type, consumerId){
+        c.sock.emit('pc', idx, type, consumerId);
     }.bind(this));
     
     c.sock.on('disconnect', function(){
