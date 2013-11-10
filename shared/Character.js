@@ -62,6 +62,11 @@ Character.prototype.tick = function(delta) {
     }
     
     // TODO: check for warp tile? or just warp when leaving the screen?
+    if (this.x >= this.maze.width-1 && this.direction === 2) {
+        this.x = 0.5;
+    } else if (this.x <= 0.5 && this.direction === 8) {
+        this.x = this.maze.width-1;
+    }
     
     var atNode = (this.x === this.x << 0 && this.y === this.y << 0)
         || (this.y << 0 !== (this.y + my) << 0)
