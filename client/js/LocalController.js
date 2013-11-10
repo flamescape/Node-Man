@@ -9,6 +9,6 @@ var LocalController = function(character, sock){
 };
 
 LocalController.prototype.newDirection = function(direction) {
-    this.character.nextDirection = direction;
+    //this.character.nextDirection = direction;
     this.sock.emit('nd', direction);
 };
