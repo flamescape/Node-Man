@@ -32,16 +32,9 @@ app.use('/js/lib/shared', express.static(path.join(__dirname, 'node_modules')));
 app.use('/levels', express.static(path.join(__dirname, 'levels')));
 
 
-var g = new Game(io, 'game.1');
-g.loadLevel(1);
-g.once('mazeLoaded', function(){
-/*
-    var c = g.addCharacter(new CharacterNodeman(g.maze), tiles.nodeman);
-    c.x = 13.5;
-    c.y = 23;
-    c.assignController(new LocalController(c));
-*/
-    g.start(); // start simulation
+var g = Game.create(io, 'game.1', 1);
+g.once('started', function(){
+    g.log('Game simulation started');
 });
 
 io.sockets.on('connection', function(sock) {

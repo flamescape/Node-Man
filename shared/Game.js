@@ -2,6 +2,10 @@ var EventEmitter2 = EventEmitter2 || require('eventemitter2').EventEmitter2
   , Maze = Maze || require('./Maze')
   ;
 
+if (SERVER) {
+    require('colors');
+}
+
 var Game = function(io, room) {
     this.io = io; // socket io
     this.room = room; // socket io room
@@ -84,6 +88,8 @@ Game.prototype.start = function() {
             this.draw(); // redraw pills and characters
         }
     }.bind(this), 1000/this.fps);
+    
+    this.emit('started');
 };
 
 Game.prototype.stop = function() {
@@ -118,6 +124,23 @@ Game.prototype.animateSuperPills = function(rotSpeed, pulseSpeed) {
         var c = Math.sin(Date.now() / pulseSpeed) + 1;
         shape.setAttr('radius', 12 + 2 * c);
     });
+};
+
+Game.prototype.log = function() {
+    if (!SERVER) {
+        console.log.apply(console, arguments);
+    } else {
+        console.log.bind(console, 'Room:', this.room.red, ':').apply(console, arguments);
+    }
+};
+
+Game.create = function(io, room, startingLevel) {
+    var g = new Game(io, room);
+    g.loadLevel(startingLevel);
+    g.once('mazeLoaded', function(){
+        g.start(); // start simulation
+    });
+    return g;
 };
 
 (typeof module !== 'undefined') && (module.exports = Game);
