@@ -81,10 +81,15 @@ body {
     font-weight:700;
 }
 
+
 #scoreboard span {
     font-size: 2em;
     display: inline;
     font-weight:700;
+}
+
+#spec {
+    color: "#EEE";
 }
 
 #scoreboard ul {
