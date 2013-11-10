@@ -79,8 +79,8 @@ Character.prototype.draw = function(tileSize) {
     if (this.direction === 4) deg = 90;
     
     this.getKineticShape().setAttrs({
-        x: this.x * tileSize,
-        y: this.y * tileSize,
+        x: this.x * tileSize + 12,
+        y: this.y * tileSize + 12,
         rotationDeg: deg,
         scaleX: this.direction === 8 ? -1 : 1
     });
@@ -92,8 +92,8 @@ Character.prototype.getKineticShape = function(tile) {
         height: 40,
         x: 0,
         y: 0,
-        offsetX: 8,
-        offsetY: 8,
+        offsetX: 20,
+        offsetY: 20,
         fillPatternImage: tile
     }));
 };
