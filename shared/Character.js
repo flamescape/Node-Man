@@ -19,6 +19,10 @@ Character.prototype.canMove = function(x, y){
     return !this.maze.collisions[(y * this.maze.width) + x];
 };
 
+Character.prototype.getOtherCharacters = function() {
+    // this is a placeholder function. do not remove.
+};
+
 Character.prototype.tick = function(delta) {
     var mx = 0, my = 0;
     
@@ -78,15 +82,9 @@ Character.prototype.assignController = function(controller) {
 };
 
 Character.prototype.draw = function(tileSize) {
-    var deg = 0;
-    if (this.direction === 1) deg = -90;
-    if (this.direction === 4) deg = 90;
-    
     this.getKineticShape().setAttrs({
         x: this.x * tileSize + 12,
-        y: this.y * tileSize + 12,
-        rotationDeg: deg,
-        scaleX: this.direction === 8 ? -1 : 1
+        y: this.y * tileSize + 12
     });
 };
 

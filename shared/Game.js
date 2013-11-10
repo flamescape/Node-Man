@@ -88,11 +88,12 @@ Game.prototype.addCharacter = function(character) {
     this.characters.push(character);
     if (SERVER) {
         if (character.type === 'CharacterNodeman') {
-            character.on('atJunction', function(){
-                character.contactCharacters(this.characters.filter(function(c){
-                    return c.type !== 'CharacterNodeman';
-                }));
-            }.bind(this));
+            // augment Nodeman with the ability to enumerate other characters
+            character.getOtherCharacters = function(){
+                return this.characters.filter(function(c){
+                    return c.type !== character.type;
+                });
+            }.bind(this);
         }
     } else {
         this.characterLayer.add(character.getKineticShape());

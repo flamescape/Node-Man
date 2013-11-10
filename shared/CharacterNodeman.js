@@ -3,21 +3,27 @@ var Character = Character || require('./Character');
 var CharacterNodeman = function(maze){
     Character.apply(this, arguments);
     this.type = 'CharacterNodeman';
-    this.on('atJunction', this.consumePill.bind(this));
+    
+    if (SERVER) {
+        this.on('atJunction', this.consumePill.bind(this));
+        this.on('atJunction', this.contactCharacters.bind(this));
+    }
 };
 
 CharacterNodeman.prototype.__proto__ = Character.prototype;
 
 CharacterNodeman.prototype.spawnPos = {x:13.5, y:23};
 
+// called by server only
 CharacterNodeman.prototype.consumePill = function(junction, x, y){
-    if (SERVER) {
-        var offset = (y * this.maze.width) + x;
-        this.maze.consumePill(offset, this.id);
-    }
+    var offset = (y * this.maze.width) + x;
+    this.maze.consumePill(offset, this.id);
 };
 
-CharacterNodeman.prototype.contactCharacters = function(others) {
+// called by server only
+CharacterNodeman.prototype.contactCharacters = function() {
+    var others = this.getOtherCharacters();
+
     var close = others.filter(function(c){
         var minDist = 0.8;
         var atOdds =
@@ -54,6 +60,19 @@ CharacterNodeman.prototype.getKineticShape = function() {
         offsetY: 20,
         fillPatternImage: this.img
     }));
+};
+
+CharacterNodeman.prototype.draw = function(tileSize) {
+    var deg = 0;
+    if (this.direction === 1) deg = -90;
+    if (this.direction === 4) deg = 90;
+    
+    this.getKineticShape().setAttrs({
+        x: this.x * tileSize + 12,
+        y: this.y * tileSize + 12,
+        rotationDeg: deg,
+        scaleX: this.direction === 8 ? -1 : 1
+    });
 };
 
 Character.types.CharacterNodeman = CharacterNodeman;
