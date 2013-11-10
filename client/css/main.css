@@ -115,8 +115,8 @@ body {
 
 iframe {
     background-color: white;
-    -moz-box-shadow:    0px 1px 2px 2px #f79421;
-    box-shadow:         0px 1px 2px 2px #f79421;
+    -moz-box-shadow:    0px 0px 5px 5px #f79421;
+    box-shadow:         0px 0px 5px 5px #f79421;
     -moz-animation-duration: 2s;
     -webkit-animation-duration: 2s;
     -moz-animation-name: glow;
@@ -125,35 +125,35 @@ iframe {
     animation-direction: alternate;
     -webkit-animation-iteration-count: infinite;
     -webkit-animation-direction: alternate;
-    margin: 0 auto;
+    margin-left: 150px;
 }
 
 @-moz-keyframes glow {
     from {
-        -moz-box-shadow:    0px 0px 1px 1px #f79421;
+        -moz-box-shadow:    0px 0px 5px 5px #f79421;
     }
 
     to {
-        -moz-box-shadow:    0px 0px 5px 5px #f79421;
+        -moz-box-shadow:    0px 0px 5px 5px #0e0e18;
     }
 }
 
 @-webkit-keyframes glow {
     from {
-        box-shadow:         0px 0px 1px 1px #f79421;
+        box-shadow:         0px 0px 5px 5px #f79421;
     }
 
     to {
-        box-shadow:         0px 0px 5px 5px #f79421;
+        box-shadow:         0px 0px 5px 5px #0e0e18;
     }
 }
 
 keyframes glow {
     from {
-        box-shadow:         0px 0px 1px 1px #f79421;
+        box-shadow:         0px 0px 3px 3px #f79421;
     }
 
     to {
-        box-shadow:         0px 0px 5px 5px #f79421;
+        box-shadow:         0px 0px 5px 5px #0e0e18;
     }
 }
