@@ -26,8 +26,10 @@ sock.on('game', function(d){
 });
 
 sock.on('spectator', function(b){
-    console.log('I am spectating');
     jQuery('#spec')[b?'show':'hide']();
+});
+sock.on('control', function(){
+    jQuery('#spec').hide();
 });
 
 sock.on('lives', function(lives) {
