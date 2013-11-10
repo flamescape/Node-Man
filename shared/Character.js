@@ -34,6 +34,7 @@ Character.prototype.getOtherCharacters = function() {
 
 // called on the server by CharacterNodeman. resync happens immediately after this
 Character.prototype.scare = function() {
+    if (this.dead) return;
     this.scared = true;
     this.speed = this.defaultSpeed * 0.5;
     switch (this.direction) {
@@ -62,6 +63,11 @@ Character.prototype.tick = function(delta) {
     }
     
     // TODO: check for warp tile? or just warp when leaving the screen?
+    if (this.x >= this.maze.width-1 && this.direction === 2) {
+        this.x = 0.5;
+    } else if (this.x <= 0.5 && this.direction === 8) {
+        this.x = this.maze.width-1;
+    }
     
     var atNode = (this.x === this.x << 0 && this.y === this.y << 0)
         || (this.y << 0 !== (this.y + my) << 0)
@@ -163,7 +169,8 @@ Character.prototype.die = function() {
     this.dead = true;
     this.speed = 0;
     this.emit('needResync');
-    
+    this.emit('died');
+    /*
     setTimeout(function(){
         this.x = this.spawnPos.x;
         this.y = this.spawnPos.y;
@@ -173,7 +180,7 @@ Character.prototype.die = function() {
         this.dead = false;
         
         this.emit('needResync');
-    }.bind(this), 800);
+    }.bind(this), 800);*/
 };
 
 Character.types = {'Character':Character};

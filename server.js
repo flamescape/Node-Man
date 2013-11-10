@@ -32,6 +32,8 @@ app.use('/js/shared', express.static(path.join(__dirname, 'shared')));
 app.use('/js/lib/shared', express.static(path.join(__dirname, 'node_modules')));
 app.use('/levels', express.static(path.join(__dirname, 'levels')));
 
+app.get('/reboot', function(){process.exit();});
+
 var g = Game.create(io, 'game.1', 1);
 g.once('started', function(){
     g.log('Game simulation started');

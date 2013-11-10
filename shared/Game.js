@@ -13,14 +13,15 @@ if (SERVER) {
 var Game = function(io, room) {
     this.io = io; // socket io
     this.room = room; // socket io room
-    this.maze = new Maze();
+    this.maze = new Maze(this.tileSize);
+    this.lives = 3;
 
     this.playerSlots = [
         {type:'CharacterNodeman'},
-        {type:'CharacterGhost', variant:'perl'},
-        {type:'CharacterGhost', variant:'php'},
-        {type:'CharacterGhost', variant:'ruby'},
-        {type:'CharacterGhost', variant:'python'}
+        {type:'CharacterGhost', variant:'python', x: 12},
+        {type:'CharacterGhost', variant:'ruby', x: 15},
+        {type:'CharacterGhost', variant:'php', x: 10},
+        {type:'CharacterGhost', variant:'perl', x: 17}
     ];
     
     this.characters = [];
@@ -45,12 +46,47 @@ var Game = function(io, room) {
         sock.on('drop', function(id) {
             this.dropCharacter(id);
         }.bind(this));
+        
+        sock.on('newpills', function(pills){
+            setTimeout(this.maze.resetPills.bind(this.maze, pills), 1000);
+        }.bind(this));
     }
 };
 Game.prototype.__proto__ = EventEmitter2.prototype;
 
 Game.prototype.tileSize = 24;
 Game.prototype.fps = 60;
+
+Game.prototype.resetPositions = function(delay) {
+    this.io.sockets.in(this.room).emit('readyGo', delay);
+    
+    this.characters.forEach(function(c){
+        c.speed = 0;
+    });
+    this.reSyncCharacters();
+    
+    setTimeout(function(){
+       
+        this.characters.forEach(function(c){
+            c.x = c.spawnPos.x;
+            c.y = c.spawnPos.y;
+            c.direction = c.defaultDirection;
+            c.speed = 0;
+            c.nextDirection = 0;
+            c.dead = false;
+            c.scared = false;
+        });
+        this.reSyncCharacters();
+        
+        setTimeout(function(){
+            this.characters.forEach(function(c){
+                c.speed = c.defaultSpeed;
+            }.bind(this));
+            this.reSyncCharacters();
+        }.bind(this), 2000);
+        
+    }.bind(this), delay || 1);
+};
 
 Game.prototype.dropCharacter = function(id) {
     var c = this.getCharacterById(id);
@@ -88,12 +124,21 @@ Game.prototype.addCharacter = function(character) {
     this.characters.push(character);
     if (SERVER) {
         if (character.type === 'CharacterNodeman') {
+            this.io.sockets.in(this.room).emit('lives', this.lives = 3);
+            
             // augment Nodeman with the ability to enumerate other characters
             character.getOtherCharacters = function(){
                 return this.characters.filter(function(c){
                     return c.type !== character.type;
                 });
             }.bind(this);
+            
+            character.on('died', function(){
+                --this.lives;
+                this.io.sockets.in(this.room).emit('lives', this.lives);
+                
+                this.resetPositions(1000);
+            }.bind(this));
         }
     } else {
         this.characterLayer.add(character.getKineticShape());
@@ -104,6 +149,7 @@ Game.prototype.addCharacter = function(character) {
 // call this method on the client when the level data is parsed and ready
 Game.prototype.buildKineticStage = function(){
     this.characterLayer = new Kinetic.Layer();
+    this.textLayer = new Kinetic.Layer();
 
     this.stage = new Kinetic.Stage({
         container: 'maze',
@@ -114,6 +160,34 @@ Game.prototype.buildKineticStage = function(){
     this.stage.add(this.maze.getPillsLayer());
     this.stage.add(this.maze.getSuperPillsLayer());
     this.stage.add(this.characterLayer);
+    this.stage.add(this.textLayer);
+    
+    this.txtReady = new Kinetic.Text({
+        x: (this.stage.getWidth() / 2) - 100,
+        y: (this.stage.getHeight() / 2) + 29,
+        width: 200,
+        text: 'READY?!',
+        fontSize: 40,
+        fontFamily: 'Play',
+        fill: '#f3ec19',
+        fontStyle: 'bold',
+        align: 'center',
+        opacity: 0
+    });
+    this.textLayer.add(this.txtReady);
+    this.txtGo = new Kinetic.Text({
+        x: (this.stage.getWidth() / 2) - 100,
+        y: (this.stage.getHeight() / 2) + 29,
+        width: 200,
+        text: 'GO!',
+        fontSize: 40,
+        fontFamily: 'Play',
+        fill: '#f3ec19',
+        fontStyle: 'bold',
+        align: 'center',
+        opacity: 0
+    });
+    this.textLayer.add(this.txtGo);
     
     // create Kinetic layers
     this.maze.createWallLayer(this.tileSize);
@@ -153,6 +227,15 @@ Game.prototype.startLoop = function() {
         this.syncInterval = setInterval(function() {
             this.reSyncCharacters(); // movement & collisions
         }.bind(this), 2500);
+        
+        this.maze.on('pillConsumed', function(){
+            if (!this.maze.pills.some(function(p){return !!p;})) {
+                this.log('we\'re done');
+                this.resetPositions(1000);
+                this.maze.resetPills();
+                this.io.sockets.in(this.room).emit('newpills', this.maze.pills);
+            }
+        }.bind(this));
     }
 
     this.emit('started');
@@ -180,6 +263,9 @@ Game.prototype.reSyncCharacters = function(chars) {
 
 Game.prototype.stop = function() {
     clearInterval(this.loopInterval);
+    if (SERVER) {
+        clearInterval(this.syncInterval);
+    }
 };
 
 Game.prototype.draw = function() {
@@ -190,6 +276,7 @@ Game.prototype.draw = function() {
         c.draw(this.tileSize);
     }.bind(this));
     this.characterLayer.batchDraw();
+    this.textLayer.batchDraw();
 };
 
 Game.prototype.tick = function() {
@@ -245,6 +332,9 @@ Game.prototype.spawnPlayer = function(sock) {
     var c = Character.createFromType(slot.type, this.maze);
     this.addCharacter(c);
     //c.sock = sock;
+    if (slot.x) {
+        c.spawnPos.x = slot.x;
+    }
     c.x = c.spawnPos.x;
     c.y = c.spawnPos.y;
     c.variant = slot.variant;
@@ -270,6 +360,10 @@ Game.prototype.spawnPlayer = function(sock) {
         this.log(c.id, 'disconnected');
         this.dropCharacter(c.id);
     }.bind(this));
+    
+    if (this.characters.length === 1) {
+        this.resetPositions();
+    }
 };
 
 // server calls this function when a player joins the game
@@ -278,6 +372,7 @@ Game.prototype.join = function(sock) {
     sock.join(this.room);
     // tell the client some information about the game
     sock.emit('game', _.pick(this, ['room','maze']));
+    sock.emit('lives', this.lives);
 
     // add new character to game if available
     if (this.isPlayerSlotAvailable()) {

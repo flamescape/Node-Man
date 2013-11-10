@@ -4,8 +4,10 @@ if (SERVER) {
     var _ = require('underscore');
 }
 
-var Maze = function(){
+var Maze = function(tileSize){
+    this.tileSize = tileSize;
     this.collisions = [];
+    this.pills = [];
 };
 Maze.prototype.__proto__ = EventEmitter2.prototype;
 
@@ -66,6 +68,7 @@ Maze.prototype.parse = function(data) {
     this.pills = _.map(data, function(tile){
         return tile === '.' ? 1 : (tile === '@' ? 2 : 0);
     });
+    this.pillsOriginal = this.pills.slice();
     
     var tileAt = function(idx) {
         // if tile is outside the map, consider it solid
@@ -125,7 +128,7 @@ Maze.prototype.getTileImage = function(path) {
     return this._tileImages[path];
 };
 
-Maze.prototype.createWallLayer = function(tileSize) {
+Maze.prototype.createWallLayer = function() {
     var layer = this.getWallLayer();
 
     _.each(this.wallDecor, function(tile, idx) {
@@ -134,18 +137,18 @@ Maze.prototype.createWallLayer = function(tileSize) {
             return;
         
         layer.add(new Kinetic.Rect({
-            x: (idx % this.width) * tileSize,
-            y: Math.floor(idx / this.width) * tileSize,
-            width: tileSize,
-            height: tileSize,
+            x: (idx % this.width) * this.tileSize,
+            y: Math.floor(idx / this.width) * this.tileSize,
+            width: this.tileSize,
+            height: this.tileSize,
             fillPatternImage: this.getTileImage('img/tiles/'+tile+'.png')
         }));
         
         // for debugging
         /*
         layer.add(new Kinetic.Text({
-            x: (idx % this.width) * tileSize,
-            y: Math.floor(idx / this.width) * tileSize,
+            x: (idx % this.width) * this.tileSize,
+            y: Math.floor(idx / this.width) * this.tileSize,
             text: tile.toString(),
             fontSize: 10,
             fill: 'green'
@@ -157,10 +160,24 @@ Maze.prototype.getWallLayer = function() {
     return this.wallLayer || (this.wallLayer = new Kinetic.Layer());
 };
 
-Maze.prototype.createPillsLayer = function(tileSize) {
+Maze.prototype.resetPills = function(pills) {
+    if (!SERVER) {
+        if (pills) {
+            this.pills = pills;
+        }
+        this.createPillsLayer();
+    } else {
+        this.pills = this.pillsOriginal.slice();
+    }
+};
+
+Maze.prototype.createPillsLayer = function() {
     this.pillShapes = {};
     var pillsLayer = this.getPillsLayer();
     var superPillsLayer = this.getSuperPillsLayer();
+    
+    pillsLayer.setOpacity(0);
+    superPillsLayer.setOpacity(0);
     
     _.each(this.pills, function(pill, idx) {
         if (!pill) return;
@@ -169,8 +186,8 @@ Maze.prototype.createPillsLayer = function(tileSize) {
         
         if (pill === 1) {
             pillsLayer.add(pillShape = new Kinetic.RegularPolygon({
-                x: (idx % this.width) * tileSize + tileSize * 0.5,
-                y: Math.floor(idx / this.width) * tileSize + tileSize * 0.5,
+                x: (idx % this.width) * this.tileSize + this.tileSize * 0.5,
+                y: Math.floor(idx / this.width) * this.tileSize + this.tileSize * 0.5,
                 radius: 4,
                 sides: 6,
                 rotationDeg: Math.random() * (360 - 1) + 1,
@@ -178,8 +195,8 @@ Maze.prototype.createPillsLayer = function(tileSize) {
             }));
         } else if (pill === 2) {
             superPillsLayer.add(pillShape = new Kinetic.RegularPolygon({
-                x: (idx % this.width) * tileSize + tileSize * 0.5,
-                y: Math.floor(idx / this.width) * tileSize + tileSize * 0.5,
+                x: (idx % this.width) * this.tileSize + this.tileSize * 0.5,
+                y: Math.floor(idx / this.width) * this.tileSize + this.tileSize * 0.5,
                 radius: 12,
                 sides: 6,
                 rotationDeg: Math.random() * (360 - 1) + 1,
@@ -193,6 +210,17 @@ Maze.prototype.createPillsLayer = function(tileSize) {
         
         this.pillShapes[idx] = pillShape;
     }.bind(this));
+    
+    (new Kinetic.Tween({
+        node: pillsLayer, 
+        duration: 1,
+        opacity: 1
+    })).play();
+    (new Kinetic.Tween({
+        node: superPillsLayer, 
+        duration: 1,
+        opacity: 1
+    })).play();
 };
 
 Maze.prototype.getPillsLayer = function() {

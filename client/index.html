@@ -6,7 +6,12 @@
 <div id="maze"></div>
 <div id="info">
     <img class="logo" src="img/node-man-logo.png" alt="Node-Man logo">
-    <div id="controls"> 
+    <iframe src="http://nodeknockout.com/iframe/flamescape"></iframe>
+    <div id="about" class="clear"> 
+        <h2>What's this?</h2>
+        <p>Node-Man is a re-imagining of Namco's classic arcade game with added multiplayer game mechanics.</p>
+        <p>You get to either play as the game's titular hero with the goal of gobbling up all the nodes distributed around the map, or play as one of the antagonists represented as the ghosts of dead web technologies.</p>
+        <p>Spectators are queued to play until a slot opens!</p>
         <dl>
             <dt>Controls</dt>
             <dd><kbd title="Move up">↑</kbd></dd>
@@ -15,11 +20,19 @@
             <dd><kbd title="Move right">→</kbd></dd>
         </dl>
     </div>
-    <button id="play" disabled>Play!</button>
+    <div id="scoreboard" class="clear">
+        <dl><dt>Score: </dt><dd>1,000</dd></dl>
+        <span>Lives: </span>
+        <ul id="lives">
+            <li><img class="lv1 lv2 lv3" src="img/node-man.png" alt="1 life"></li>
+            <li><img class="lv2 lv3" src="img/node-man.png" alt="1 life"></li>
+            <li><img class="lv3" src="img/node-man.png" alt="1 life"></li>
+        </ul>
+        <div class="clear">Waiting to play. You are currently spectating.</div>
+    </div>
 </div>
 
 <!-- http://blog.nodeknockout.com/post/35364532732/protip-add-the-vote-ko-badge-to-your-app -->
-<!-- <iframe src="http://nodeknockout.com/iframe/flamescape" frameborder=0 scrolling=no allowtransparency=true width=115 height=25></iframe> -->
 
 <script>
 // a globally defined truth
