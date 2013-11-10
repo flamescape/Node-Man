@@ -25,8 +25,8 @@ body {
     height: 72px;
     border: 3px solid #ffb31a;
     margin-top: 24px;
-    -moz-box-shadow:    3px 3px 0px 0px #ffcb62;
-    box-shadow:         3px 3px 0px 0px #ffcb62;
+    -moz-box-shadow:    3px 3px 0px 0px #f79421;
+    box-shadow:         3px 3px 0px 0px #f79421;
 }
 
 #controls dl {
@@ -51,6 +51,22 @@ body {
     padding: 5px 10px 5px 10px;
     -moz-box-shadow:    3px 3px 0px 0px #a69e90;
     box-shadow:         3px 3px 0px 0px #a69e90;
+}
+
+#play {
+    font-weight:700;
+    border-radius: 6px;
+    margin-top: 24px;
+    height: 72px;
+    background-color: #f79421;
+    width: 100%;
+    color: #0e0e0e;
+    border: 3px solid #b26b18;
+    font-family: "Play", sans-serif;
+    font-size: 3em;
+    box-shadow: 2px 2px 0px 0px #ae6817, 4px 4px 0px 0px #ae6817;
+    -moz-box-shadow: 2px 2px 0px 0px #ae6817, 4px 4px 0px 0px #ae6817;
+    text-shadow: 1px 1px 1px #000;
 }
 
 .logo {
