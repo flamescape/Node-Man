@@ -13,20 +13,22 @@ var Game = function(io, room) {
     this.room = room; // socket io room
     this.maze = new Maze();
 
-    this.characters = {};
+    this.characters = [];
     
-    if (SERVER) {
-        this.once('mazeLoaded', function(maze){
-            this.io.sockets.in(this.room).emit('startGame', maze);
-        }.bind(this));
-    } else {
+    if (!SERVER) {
         sock.on('characters', function(chars){
             this.reSyncCharacters(chars);
         }.bind(this));
         
         sock.on('control', function(id) {
-            var lc = new LocalController(this.characters[id], sock);
-            this.characters[id].assignController(lc);
+            console.log('i\'ve been given control of', id);
+            var c = this.getCharacterById(id);
+            var lc = new LocalController(c, sock);
+            c.assignController(lc);
+        }.bind(this));
+        
+        sock.on('drop', function(id) {
+            this.dropCharacter(id);
         }.bind(this));
     }
 };
@@ -34,6 +36,21 @@ Game.prototype.__proto__ = EventEmitter2.prototype;
 
 Game.prototype.tileSize = 24;
 Game.prototype.fps = 60;
+
+Game.prototype.dropCharacter = function(id) {
+    var c = this.getCharacterById(id);
+    if (SERVER) {
+        this.io.sockets.in(this.room).emit('drop', c.id);
+    }
+    c.destroy();
+    this.characters = this.characters.filter(function(c){
+        return c.id !== id;
+    });
+};
+
+Game.prototype.getCharacterById = function(id) {
+    return _.find(this.characters, function(c){return c.id===id;});
+};
 
 Game.prototype.calcDelta = function(){
     var delta = 0;
@@ -45,7 +62,7 @@ Game.prototype.calcDelta = function(){
 };
 
 Game.prototype.addCharacter = function(character) {
-    this.characters[character.id] = character;
+    this.characters.push(character);
     if (!SERVER) {
         this.characterLayer.add(character.getKineticShape());
     }
@@ -105,7 +122,7 @@ Game.prototype.startLoop = function() {
             this.reSyncCharacters(); // movement & collisions
         }.bind(this), 2500);
     }
-    
+
     this.emit('started');
 };
 
@@ -117,12 +134,12 @@ Game.prototype.reSyncCharacters = function(chars) {
         }));
     } else {
         _.each(chars, function(chr){
-            if (!this.characters[chr.id]) {
-                this.characters[chr.id] = this.addCharacter(Character.createFromType(chr.type, this.maze));
+            if (!this.getCharacterById(chr.id)) {
+                var c = this.addCharacter(Character.createFromType(chr.type, this.maze));
+                c.id = chr.id;
             }
             
-            var gChr = this.characters[chr.id];
-            _.extend(gChr, chr);
+            _.extend(this.getCharacterById(chr.id), chr);
         }.bind(this));
     }
 };
@@ -145,11 +162,11 @@ Game.prototype.tick = function() {
     var delta = this.calcDelta();
     if (!delta) // no time has passed since last update?
         return;
-        
+
     _.each(this.characters, function(c){
         c.tick(delta);
     }.bind(this));
-    
+
     this.emit('tick');
 };
 
@@ -197,9 +214,15 @@ Game.prototype.join = function(sock) {
     
     // give character control to sock
     c.sock.emit('control', c.id);
+    
     c.sock.on('nd', function(nd){
         c.nextDirection = nd;
         this.once('tick', this.reSyncCharacters.bind(this));
+    }.bind(this));
+    
+    c.sock.on('disconnect', function(){
+        this.log(c.id, 'disconnected');
+        this.dropCharacter(c.id);
     }.bind(this));
 };
 
