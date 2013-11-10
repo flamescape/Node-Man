@@ -3,6 +3,23 @@ var Character = Character || require('./Character');
 var CharacterGhost = function(maze){
     Character.apply(this, arguments);
     this.type = 'CharacterGhost';
+    
+    this.on('died', function(){
+        this.speed = 0;
+        this.scared = false;
+        this.x = this.spawnPos.x;
+        this.y = this.spawnPos.y+3;
+        this.emit('needResync');
+        
+        setTimeout(function(){
+            this.y = this.spawnPos.y;
+            this.direction = 2;
+            this.speed = this.defaultSpeed;
+            this.dead = false;
+            
+            this.emit('needResync');
+        }.bind(this), 6000);
+    }.bind(this));
 };
 
 CharacterGhost.prototype.__proto__ = Character.prototype;

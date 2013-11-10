@@ -34,6 +34,7 @@ Character.prototype.getOtherCharacters = function() {
 
 // called on the server by CharacterNodeman. resync happens immediately after this
 Character.prototype.scare = function() {
+    if (this.dead) return;
     this.scared = true;
     this.speed = this.defaultSpeed * 0.5;
     switch (this.direction) {
@@ -168,7 +169,8 @@ Character.prototype.die = function() {
     this.dead = true;
     this.speed = 0;
     this.emit('needResync');
-    
+    this.emit('died');
+    /*
     setTimeout(function(){
         this.x = this.spawnPos.x;
         this.y = this.spawnPos.y;
@@ -178,7 +180,7 @@ Character.prototype.die = function() {
         this.dead = false;
         
         this.emit('needResync');
-    }.bind(this), 800);
+    }.bind(this), 800);*/
 };
 
 Character.types = {'Character':Character};
