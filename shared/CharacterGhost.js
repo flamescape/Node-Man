@@ -12,7 +12,7 @@ CharacterGhost.prototype.spawnPos = {x:13.5, y:11};
 CharacterGhost.prototype.getKineticShape = function() {
     if (!this.img) {
         this.img = new Image();
-        this.img.src = 'img/php.png';
+        this.img.src = 'img/ruby.png';
     }
     
     return this.kineticShape || (this.kineticShape = new Kinetic.Rect({
