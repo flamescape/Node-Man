@@ -17,10 +17,10 @@ var Game = function(io, room) {
 
     this.playerSlots = [
         {type:'CharacterNodeman'},
-        {type:'CharacterGhost', variant:'python'},
-        {type:'CharacterGhost', variant:'ruby'},
-        {type:'CharacterGhost', variant:'php'},
-        {type:'CharacterGhost', variant:'perl'}
+        {type:'CharacterGhost', variant:'python', x: 10},
+        {type:'CharacterGhost', variant:'ruby', x: 12},
+        {type:'CharacterGhost', variant:'php', x: 15},
+        {type:'CharacterGhost', variant:'perl', x: 17}
     ];
     
     this.characters = [];
@@ -297,6 +297,7 @@ Game.prototype.spawnPlayer = function(sock) {
     c.x = c.spawnPos.x;
     c.y = c.spawnPos.y;
     c.variant = slot.variant;
+    if (slot.x) c.x = slot.x;
     slot.occupied = c.id;
 
     // tell sock about characters in the game
