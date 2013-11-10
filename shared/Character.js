@@ -125,6 +125,13 @@ Character.prototype.changeDirection = function(newDir) {
     }
 };
 
+Character.prototype.destroy = function() {
+    this.destroyed = true;
+    if (!SERVER) {
+        this.getKineticShape().destroy();
+    }
+};
+
 Character.types = {'Character':Character};
 Character.createFromType = function(type, maze){
     return new Character.types[type](maze);
