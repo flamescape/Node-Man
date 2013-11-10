@@ -58,13 +58,15 @@ Game.prototype.tileSize = 24;
 Game.prototype.fps = 60;
 
 Game.prototype.resetPositions = function(delay) {
+    this.io.sockets.in(this.room).emit('readyGo', delay);
+    
     this.characters.forEach(function(c){
         c.speed = 0;
     });
     this.reSyncCharacters();
     
     setTimeout(function(){
-        
+       
         this.characters.forEach(function(c){
             c.x = c.spawnPos.x;
             c.y = c.spawnPos.y;
@@ -145,6 +147,7 @@ Game.prototype.addCharacter = function(character) {
 // call this method on the client when the level data is parsed and ready
 Game.prototype.buildKineticStage = function(){
     this.characterLayer = new Kinetic.Layer();
+    this.textLayer = new Kinetic.Layer();
 
     this.stage = new Kinetic.Stage({
         container: 'maze',
@@ -155,6 +158,34 @@ Game.prototype.buildKineticStage = function(){
     this.stage.add(this.maze.getPillsLayer());
     this.stage.add(this.maze.getSuperPillsLayer());
     this.stage.add(this.characterLayer);
+    this.stage.add(this.textLayer);
+    
+    this.txtReady = new Kinetic.Text({
+        x: (this.stage.getWidth() / 2) - 100,
+        y: (this.stage.getHeight() / 2) + 29,
+        width: 200,
+        text: 'READY?!',
+        fontSize: 40,
+        fontFamily: 'Play',
+        fill: '#f3ec19',
+        fontStyle: 'bold',
+        align: 'center',
+        opacity: 0
+    });
+    this.textLayer.add(this.txtReady);
+    this.txtGo = new Kinetic.Text({
+        x: (this.stage.getWidth() / 2) - 100,
+        y: (this.stage.getHeight() / 2) + 29,
+        width: 200,
+        text: 'GO!',
+        fontSize: 40,
+        fontFamily: 'Play',
+        fill: '#f3ec19',
+        fontStyle: 'bold',
+        align: 'center',
+        opacity: 0
+    });
+    this.textLayer.add(this.txtGo);
     
     // create Kinetic layers
     this.maze.createWallLayer(this.tileSize);
@@ -243,6 +274,7 @@ Game.prototype.draw = function() {
         c.draw(this.tileSize);
     }.bind(this));
     this.characterLayer.batchDraw();
+    this.textLayer.batchDraw();
 };
 
 Game.prototype.tick = function() {
@@ -326,6 +358,10 @@ Game.prototype.spawnPlayer = function(sock) {
         this.log(c.id, 'disconnected');
         this.dropCharacter(c.id);
     }.bind(this));
+    
+    if (this.characters.length === 1) {
+        this.resetPositions();
+    }
 };
 
 // server calls this function when a player joins the game
