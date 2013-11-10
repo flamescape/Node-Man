@@ -31,9 +31,9 @@ Game.prototype.calcDelta = function(){
 
 Game.prototype.__proto__ = EventEmitter2.prototype;
 
-Game.prototype.addCharacter = function(character) {
+Game.prototype.addCharacter = function(character, tile) {
     this.characters.push(character);
-    this.characterLayer.add(character.getKineticShape());
+    this.characterLayer.add(character.getKineticShape(tile));
     return character;
 };
 

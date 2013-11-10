@@ -74,21 +74,27 @@ Character.prototype.assignController = function(controller) {
 };
 
 Character.prototype.draw = function(tileSize) {
+    var deg = 0;
+    if (this.direction === 1) deg = -90;
+    if (this.direction === 4) deg = 90;
+    
     this.getKineticShape().setAttrs({
         x: this.x * tileSize,
-        y: this.y * tileSize
+        y: this.y * tileSize,
+        rotationDeg: deg,
+        scale: this.direction === 8 ? -1 : 1
     });
 };
 
-Character.prototype.getKineticShape = function() {
+Character.prototype.getKineticShape = function(tile) {
     return this.kineticShape || (this.kineticShape = new Kinetic.Rect({
-        width: 40,
+        width: 35,
         height: 40,
         x: 0,
         y: 0,
         offsetX: 8,
         offsetY: 8,
-        fill: 'white'
+        fillPatternImage: tile
     }));
 };
 
