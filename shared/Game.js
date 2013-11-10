@@ -1,6 +1,8 @@
 var EventEmitter2 = EventEmitter2 || require('eventemitter2').EventEmitter2
   , Maze = Maze || require('./Maze')
+  , Character = Character || require('./Character')
   , CharacterNodeman = CharacterNodeman || require('./CharacterNodeman')
+  , CharacterGhost = CharacterGhost || require('./CharacterGhost')
   ;
 
 if (SERVER) {
@@ -13,6 +15,14 @@ var Game = function(io, room) {
     this.room = room; // socket io room
     this.maze = new Maze();
 
+    this.playerSlots = [
+        {type:'CharacterNodeman'},
+        {type:'CharacterGhost', variant:1},
+        {type:'CharacterGhost', variant:2},
+        {type:'CharacterGhost', variant:3},
+        {type:'CharacterGhost', variant:4}
+    ];
+    
     this.characters = [];
     
     if (!SERVER) {
@@ -202,36 +212,46 @@ Game.create = function(io, room, startingLevel) {
     return g;
 };
 
+// server calls this function when a player joins the game
+// (this is currently automatic on IO connect; see server.js)
 Game.prototype.join = function(sock) {
     sock.join(this.room);
     // tell the client some information about the game
     sock.emit('game', _.pick(this, ['room','maze']));
 
-    // add new character to game
-    var c = this.addCharacter(new CharacterNodeman(this.maze));
-    c.sock = sock;
-    c.x = 13.5;
-    c.y = 23;
+    // add new character to game if available
+    if (this.playerSlots.length) {
+        var slotToFill = this.playerSlots.shift();
+        var c = Character.createFromType(slotToFill.type, this.maze);
+        this.addCharacter(c);
+        c.sock = sock;
+        c.x = c.spawnPos.x;
+        c.y = c.spawnPos.y;
+
+        // tell sock about characters in the game
+        // and broadcast new character to others
+        this.reSyncCharacters();
+        
+        // give character control to sock
+        sock.emit('control', c.id);
+        
+        sock.on('nd', function(nd){
+            c.nextDirection = nd;
+            this.once('tick', this.reSyncCharacters.bind(this));
+        }.bind(this));
+
+        sock.on('disconnect', function(){
+            this.log(c.id, 'disconnected');
+            this.dropCharacter(c.id);
+        }.bind(this));
+    } else {
+        // just show the spectator who is playing
+        this.reSyncCharacters();
+    }
     
-    // tell sock about characters in the game
-    // and broadcast new character to others
-    this.reSyncCharacters();
-    
-    // give character control to sock
-    c.sock.emit('control', c.id);
-    
-    c.sock.on('nd', function(nd){
-        c.nextDirection = nd;
-        this.once('tick', this.reSyncCharacters.bind(this));
-    }.bind(this));
-    
+    // notifications to all observing sockets (even spectators)
     this.maze.on('pillConsumed', function(idx, type, consumerId){
-        c.sock.emit('pc', idx, type, consumerId);
-    }.bind(this));
-    
-    c.sock.on('disconnect', function(){
-        this.log(c.id, 'disconnected');
-        this.dropCharacter(c.id);
+        sock.emit('pc', idx, type, consumerId);
     }.bind(this));
 };
 
