@@ -22,9 +22,17 @@ CharacterNodeman.prototype.consumePill = function(junction, x, y){
 
 // called by server only
 CharacterNodeman.prototype.contactCharacters = function() {
+    if (this.dead) {
+        return false;
+    }
+
     var others = this.getOtherCharacters();
 
     var close = others.filter(function(c){
+        if (c.dead) {
+            return false;
+        }
+        
         var minDist = 0.8;
         var atOdds =
                (c.direction === 1 && this.direction === 4)
@@ -42,7 +50,12 @@ CharacterNodeman.prototype.contactCharacters = function() {
     
     close.forEach(function(c){
         console.log('NODEMAN is close to:', c.id, c.type, c.x, c.y);
-    });
+        if (this.poweredUp) {
+            c.die();
+        } else {
+            this.die();
+        }
+    }.bind(this));
 };
 
 CharacterNodeman.prototype.getKineticShape = function() {

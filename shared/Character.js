@@ -7,11 +7,14 @@ var Character = function(maze) {
     this.y = 0;
     /* up:1, right:2, down:4, left:8 */
     this.direction = 2;
-    this.speed = 0.1285;
+    this.speed = this.defaultSpeed;
     this.nextDirection = 0;
     this.type = 'Character';
+    this.dead = false;
 };
 Character.prototype.__proto__ = EventEmitter2.prototype;
+
+Character.prototype.defaultSpeed = 0.1285;
 
 Character.uid = 0;
 
@@ -128,6 +131,23 @@ Character.prototype.destroy = function() {
     if (!SERVER) {
         this.getKineticShape().destroy();
     }
+};
+
+// only called by server
+Character.prototype.die = function() {
+    this.dead = true;
+    this.speed = 0;
+    this.emit('died');
+    
+    setTimeout(function(){
+        this.x = this.spawnPos.x;
+        this.y = this.spawnPos.y;
+        this.direction = 2;
+        this.speed = this.defaultSpeed
+        this.dead = false;
+        
+        this.emit('respawned');
+    }.bind(this), 5000);
 };
 
 Character.types = {'Character':Character};
