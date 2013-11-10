@@ -1,5 +1,6 @@
 // a globally defined truth
 global.SERVER = true;
+process.chdir(__dirname);
 
 // https://github.com/nko4/website/blob/master/module/README.md#nodejs-knockout-deploy-check-ins
 require('nko')('AMR6PQQjUxHNpPiC');
