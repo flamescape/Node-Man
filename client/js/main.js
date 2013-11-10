@@ -26,7 +26,10 @@ sock.on('game', function(d){
 });
 
 sock.on('lives', function(lives) {
-    console.log(lives);
+    if (lives >= 0) {
+        jQuery('#lives img').hide();
+        jQuery('#lives img.lv'+lives).show();
+    }
 });
 
 /* prevent keys from scrolling page */

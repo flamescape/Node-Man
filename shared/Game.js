@@ -124,6 +124,8 @@ Game.prototype.addCharacter = function(character) {
     this.characters.push(character);
     if (SERVER) {
         if (character.type === 'CharacterNodeman') {
+            this.io.sockets.in(this.room).emit('lives', this.lives = 3);
+            
             // augment Nodeman with the ability to enumerate other characters
             character.getOtherCharacters = function(){
                 return this.characters.filter(function(c){
