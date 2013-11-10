@@ -25,6 +25,11 @@ sock.on('game', function(d){
     });
 });
 
+sock.on('spectator', function(b){
+    console.log('I am spectating');
+    jQuery('#spec')[b?'show':'hide']();
+});
+
 sock.on('lives', function(lives) {
     if (lives >= 0) {
         jQuery('#lives img').hide();
