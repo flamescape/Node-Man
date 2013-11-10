@@ -4,19 +4,19 @@ body {
 }
 
 #maze { 
-  width: 672px;
-  height: 744px;
-  background: #0e0e0e;
-  float: left;
+    width: 672px;
+    height: 744px;
+    background: #0e0e0e;
+    float: left;
 }
 
 #info {
-  width: 600px;
-  float: left;
-  margin-left: 72px;
-  padding-top: 12px;
+    width: 600px;
+    float: left;
+    margin-left: 72px;
+    padding-top: 12px;
 }
 
 .logo {
-  width: 100%;
+    width: 100%;
 }
