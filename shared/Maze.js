@@ -210,6 +210,7 @@ Maze.prototype.consumePill = function(idx, consumerId) {
     var type = this.pills[idx];
     this.pills[idx] = 0;
     this.emit('pillConsumed', idx, type, consumerId);
+    return type;
 };
 
 (typeof module !== 'undefined') && (module.exports = Maze);

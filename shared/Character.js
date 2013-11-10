@@ -10,7 +10,9 @@ var Character = function(maze) {
     this.speed = this.defaultSpeed;
     this.nextDirection = 0;
     this.type = 'Character';
+    
     this.dead = false;
+    this.scared = false;
 };
 Character.prototype.__proto__ = EventEmitter2.prototype;
 
@@ -24,6 +26,19 @@ Character.prototype.canMove = function(x, y){
 
 Character.prototype.getOtherCharacters = function() {
     // this is a placeholder function. do not remove.
+};
+
+// called on the server by CharacterNodeman. resync happens immediately after this
+Character.prototype.scare = function() {
+    this.scared = true;
+    this.speed = this.defaultSpeed * 0.5;
+    this.scareEnd && clearTimeout(this.scareEnd);
+    
+    this.scareEnd = setTimeout(function(){
+        this.speed = this.defaultSpeed;
+        this.scared = false;
+        this.emit('needResync');
+    }.bind(this), 10000);
 };
 
 Character.prototype.tick = function(delta) {
@@ -147,7 +162,7 @@ Character.prototype.die = function() {
         this.dead = false;
         
         this.emit('needResync');
-    }.bind(this), 5000);
+    }.bind(this), 800);
 };
 
 Character.types = {'Character':Character};

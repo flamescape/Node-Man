@@ -162,7 +162,7 @@ Game.prototype.startLoop = function() {
 Game.prototype.reSyncCharacters = function(chars) {
     if (SERVER) {
         this.io.sockets.in(this.room).emit('characters', _.map(this.characters, function(chr){
-            return _.pick(chr, ['id','type','x','y','direction','speed','nextDirection']);
+            return _.pick(chr, ['id','type','x','y','direction','speed','nextDirection','scared']);
         }));
     } else {
         _.each(chars, function(chr){
