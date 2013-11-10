@@ -1,14 +1,19 @@
-var EventEmitter2 = EventEmitter2 || require('eventemitter2');
+var EventEmitter2 = EventEmitter2 || require('eventemitter2').EventEmitter2;
 
 var Character = function(maze) {
+    this.id = ++Character.uid;
     this.maze = maze;
     this.x = 0;
     this.y = 0;
     /* up:1, right:2, down:4, left:8 */
-    this.direction = 8;
+    this.direction = 2;
     this.speed = 0.1285;
+    this.nextDirection = 0;
+    this.type = 'Character';
 };
 Character.prototype.__proto__ = EventEmitter2.prototype;
+
+Character.uid = 0;
 
 Character.prototype.canMove = function(x, y){
     return !this.maze.collisions[(y * this.maze.width) + x];
@@ -24,14 +29,7 @@ Character.prototype.tick = function(delta) {
         case 8: mx -= this.speed * delta; break; // move left
     }
     
-    // check for wall in front of us
-    // if wall - mx = 0, my = 0
-    /*if (!this.canMove(this.x + mx, this.y + my)) {
-        mx = 0;
-        my = 0;
-    }*/
-    
-    // check for warp tile? or just warp when leaving the screen?
+    // TODO: check for warp tile? or just warp when leaving the screen?
     
     var atNode = (this.x === this.x << 0 && this.y === this.y << 0)
         || (this.y << 0 !== (this.y + my) << 0)
@@ -65,6 +63,12 @@ Character.prototype.tick = function(delta) {
     
     if (this.atJunction) {
         this.emit('atJunction', this.atJunction, Math.round(this.x), Math.round(this.y));
+        
+        if (this.atJunction & this.nextDirection) {
+            this.changeDirection(this.nextDirection);
+            this.nextDirection = 0;
+        }
+        
         this.atJunction = 0;
     }
 };
@@ -94,7 +98,7 @@ Character.prototype.getKineticShape = function(tile) {
         y: 0,
         offsetX: 20,
         offsetY: 20,
-        fillPatternImage: tile
+        fill: 'white'
     }));
 };
 
@@ -120,3 +124,10 @@ Character.prototype.changeDirection = function(newDir) {
             break;
     }
 };
+
+Character.types = {'Character':Character};
+Character.createFromType = function(type, maze){
+    return new Character.types[type](maze);
+};
+
+(typeof module !== 'undefined') && (module.exports = Character);

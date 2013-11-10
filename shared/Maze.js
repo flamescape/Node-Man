@@ -5,11 +5,24 @@ if (SERVER) {
 }
 
 var Maze = function(){
-
+    this.collisions = [];
 };
 Maze.prototype.__proto__ = EventEmitter2.prototype;
 
 Maze.prototype.load = function(levelNum, cb) {
+    if (typeof levelNum === 'object') {
+        _.extend(this, _.pick(levelNum, [
+            'collisions',
+            'height',
+            'width',
+            'levelNum',
+            'pills',
+            'wallDecor'
+        ]));
+        this.emit('loaded');
+        return cb&&cb();
+    }
+
     this.levelNum = levelNum;
 
     var fn = 'levels/'+levelNum+'.txt';
@@ -100,7 +113,19 @@ Maze.prototype.parse = function(data) {
     this.emit('loaded');
 };
 
-Maze.prototype.createWallLayer = function(tileSize, tiles) {
+Maze.prototype.getTileImage = function(path) {
+    if (!this._tileImages)
+        this._tileImages = {};
+    
+    if (!this._tileImages[path]) {
+        this._tileImages[path] = new Image();
+        this._tileImages[path].src = path;
+    }
+    
+    return this._tileImages[path];
+};
+
+Maze.prototype.createWallLayer = function(tileSize) {
     var layer = this.getWallLayer();
 
     _.each(this.wallDecor, function(tile, idx) {
@@ -113,10 +138,9 @@ Maze.prototype.createWallLayer = function(tileSize, tiles) {
             y: Math.floor(idx / this.width) * tileSize,
             width: tileSize,
             height: tileSize,
-            fillPatternImage: tiles[tile] ? tiles[tile] : tiles.wall
+            fillPatternImage: this.getTileImage('img/tiles/'+tile+'.png')
         }));
         
-        //if (tiles[tile]) return;
         // for debugging
         /*
         layer.add(new Kinetic.Text({
@@ -133,7 +157,7 @@ Maze.prototype.getWallLayer = function() {
     return this.wallLayer || (this.wallLayer = new Kinetic.Layer());
 };
 
-Maze.prototype.createPillsLayer = function(tileSize, tiles) {
+Maze.prototype.createPillsLayer = function(tileSize) {
     var pillsLayer = this.getPillsLayer();
     var superPillsLayer = this.getSuperPillsLayer();
     
