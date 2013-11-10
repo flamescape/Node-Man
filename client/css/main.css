@@ -13,7 +13,7 @@ body {
 }
 
 #info {
-    width: 600px;
+    width: 400px;
     float: left;
     margin-left: 72px;
     padding-top: 12px;
@@ -36,6 +36,7 @@ body {
 #controls dl dt, #controls dl dd {
     display: inline;
     font-weight:700;
+    margin: 0 5px 0 5px;
 }
 
 #controls dl dt {
